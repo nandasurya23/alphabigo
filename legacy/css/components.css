@@ -1,0 +1,782 @@
+/* ==========================================================================
+   ALPHA × BIGO - INTERACTIVE COMPONENTS & CARDS
+   Components: Custom Dropdown, Numeric Inputs, Action Buttons,
+               Hero Result Box, Financial Breakdown Ledger, Advisor Card
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CUSTOM DROPDOWN SELECTOR
+   ========================================================================== */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.custom-dropdown-trigger {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-surface-2);
+  border: var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 12px 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  text-align: left;
+  gap: 10px;
+}
+
+.trigger-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.crown-icon {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.selected-text {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.35;
+  word-break: normal;
+  overflow-wrap: break-word;
+  color: #FFFFFF;
+}
+
+.custom-dropdown-trigger:hover {
+  background-color: var(--color-surface-hover);
+  border-color: #444444;
+}
+
+.custom-dropdown.open .custom-dropdown-trigger,
+.custom-dropdown-trigger:focus-visible {
+  border-color: var(--color-accent);
+  background-color: var(--color-surface-hover);
+}
+
+.dropdown-icon {
+  color: var(--color-accent);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.custom-dropdown.open .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background-color: #141414;
+  border: 1px solid #333333;
+  border-radius: var(--radius-sm);
+  z-index: 50;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.custom-dropdown.open .custom-dropdown-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-dropdown-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #1f1f1f;
+  transition: background-color var(--transition-fast);
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.custom-dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdown-option:hover {
+  background-color: var(--color-surface-2);
+}
+
+.custom-dropdown-option.selected {
+  background-color: #1e170a;
+  border-left: 3px solid var(--color-accent);
+}
+
+.option-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.option-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.custom-dropdown-option.selected .option-title {
+  color: var(--color-accent-bright);
+}
+
+.option-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background-color: #1a1a1a;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+
+.option-tag.gold {
+  color: var(--color-accent);
+  background-color: #241c0c;
+  border: 1px solid var(--color-primary);
+}
+
+.option-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   2. FORM BODY & INPUT NUMERIC BARS (TARGET BEANS, VALID DAYS, VALID HOURS)
+   ========================================================================== */
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.block-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.block-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #E0E0E0;
+  text-transform: uppercase;
+}
+
+.info-help-btn {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid rgba(223, 177, 91, 0.45);
+  color: var(--color-accent);
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  transition: all var(--transition-fast);
+}
+
+.info-help-btn:hover {
+  background-color: var(--color-accent);
+  color: #0E0A03;
+  border-color: var(--color-accent);
+}
+
+.status-indicator-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  background-color: var(--color-surface-2);
+  border: var(--border-subtle);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+.formatted-pill {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--color-accent-bright);
+  background-color: #1b160b;
+  border: 1px solid var(--color-primary);
+  padding: 3px 9px;
+  border-radius: var(--radius-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-numeric-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.numeric-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface-2);
+  border: var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+  gap: 12px;
+}
+
+.numeric-input-wrapper:focus-within {
+  border-color: var(--color-accent);
+  background-color: var(--color-surface-hover);
+  box-shadow: 0 0 0 2px rgba(223, 177, 91, 0.2);
+}
+
+.numeric-input-wrapper.input-error-border {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.input-leading-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.input-bean-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 5px rgba(223, 177, 91, 0.4));
+}
+
+.gold-stroke {
+  stroke: var(--color-accent);
+}
+
+.custom-beans-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: clamp(1.05rem, 4vw, 1.25rem);
+  font-weight: 800;
+  padding: 12px 0;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.currency-tag {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--color-accent);
+  letter-spacing: 0.06em;
+  padding-left: 6px;
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.input-error-msg {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.input-error-msg.visible {
+  display: block;
+}
+
+.duration-inputs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.duration-inputs-section.hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   3. ACTION BUTTONS (CALCULATE NOW & RESET)
+   ========================================================================== */
+.form-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+  padding-top: 8px;
+}
+
+.btn-calculate-now {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #DFB15B 0%, #A87A18 100%);
+  border: 1px solid #FFE58F;
+  color: #120E05;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(223, 177, 91, 0.42), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-calculate-now:hover {
+  background: linear-gradient(180deg, #E8C172 0%, #B88924 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 215, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.btn-calculate-now:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(223, 177, 91, 0.35);
+}
+
+.btn-calculate-now .btn-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-calculate-now:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-action-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.btn-action-reset svg {
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-action-reset:hover svg {
+  color: var(--color-accent);
+  transform: rotate(-45deg);
+}
+
+.btn-action-reset:hover {
+  color: var(--color-text-primary);
+  border-color: #444444;
+  background-color: var(--color-surface-2);
+}
+
+/* ==========================================================================
+   4. CARD 2: ESTIMASI PENGHASILAN & RESULTS DISPLAY
+   ========================================================================== */
+.results-card {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.results-card.pulse-glow {
+  box-shadow: 0 0 35px rgba(223, 177, 91, 0.45);
+  border-color: var(--color-accent);
+}
+
+.result-badge-glow {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-bright);
+  background: rgba(223, 177, 91, 0.12);
+  border: 1px solid rgba(223, 177, 91, 0.4);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 0 12px rgba(223, 177, 91, 0.18);
+}
+
+/* Hero Income Box */
+.hero-income-box {
+  background: linear-gradient(180deg, #18150D 0%, #110E08 100%);
+  border: 1px solid rgba(223, 177, 91, 0.28);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 231, 154, 0.12);
+}
+
+.hero-label-top {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.hero-values-combined {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-idr-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.hero-currency-tag {
+  font-size: clamp(1.1rem, 3vw, 1.35rem);
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+.hero-main-number {
+  font-size: clamp(1.6rem, 5vw, 2.25rem);
+  font-weight: 900;
+  color: var(--color-accent-bright);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.hero-val-divider {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 300;
+}
+
+.hero-usd-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.hero-usd-symbol {
+  font-size: clamp(1.1rem, 3vw, 1.35rem);
+  font-weight: 800;
+  color: var(--color-text-secondary);
+}
+
+.hero-usd-number {
+  font-size: clamp(1.4rem, 4.5vw, 1.9rem);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.hero-beans-capsule {
+  background-color: #21190B;
+  border: 1px solid rgba(223, 177, 91, 0.35);
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--color-accent);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   5. FINANCIAL BREAKDOWN LEDGER WITH 3D CIRCULAR ICONS
+   ========================================================================== */
+.breakdown-ledger-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.ledger-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ledger-title-text {
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #E0E0E0;
+}
+
+.tier-pill {
+  font-size: 0.74rem;
+  font-weight: 800;
+  background-color: #1f180c;
+  color: var(--color-accent);
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-primary);
+}
+
+.breakdown-rows-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.breakdown-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  gap: 12px;
+  transition: all var(--transition-fast);
+}
+
+.breakdown-item-card:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(223, 177, 91, 0.25);
+}
+
+.breakdown-item-card.hidden {
+  display: none;
+}
+
+.item-left-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.item-circle-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFE79A 0%, #DFB15B 50%, #8E651D 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #120E05;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.item-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.item-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+.item-beans-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tier-inline-tag {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.item-right-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.item-idr-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+
+.item-usd-val {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Total Summary Card at Bottom of Ledger */
+.total-summary-card {
+  background: linear-gradient(180deg, #1C160B 0%, #151006 100%);
+  border: 1px solid var(--color-accent);
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  margin-top: 4px;
+}
+
+.total-label-lead {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+}
+
+.total-beans-bold {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--color-accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.total-subtext-note {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.total-side-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.total-summary-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.item-idr-total {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--color-accent-bright);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.item-usd-total {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   6. SMART OPPORTUNITY ADVISOR CARD
+   ========================================================================== */
+.advisor-card {
+  background-color: #141109;
+  border: 1px solid rgba(223, 177, 91, 0.3);
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.advisor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-accent-bright);
+  margin-bottom: 6px;
+}
+
+.advisor-badge svg {
+  color: var(--color-accent-bright);
+  flex-shrink: 0;
+}
+
+.advisor-text {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.advisor-text strong {
+  color: var(--color-accent);
+}

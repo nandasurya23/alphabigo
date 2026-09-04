@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Kalkulator Resmi Estimasi Penghasilan Host Alpha Entertainment di Platform Bigo Live Indonesia berdasarkan Kebijakan Q2-April 2026.">
+  <title>ALPHA × BIGO HOST INCOME CALCULATOR</title>
+  <link rel="icon" type="image/jpeg" href="alphalogo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Modular Design System Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Modern Executive Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <!-- Unified Co-Branding Lockup -->
+        <div class="brand-lockup">
+          <!-- Alpha Entertainment -->
+          <div class="brand-unit alpha-unit">
+            <div class="brand-avatar alpha-avatar">
+              <img src="alphalogo.jpg" alt="Alpha Entertainment" class="avatar-img">
+            </div>
+            <div class="brand-meta">
+              <span class="brand-primary-name">ALPHA</span>
+              <span class="brand-sub-badge">ENTERTAINMENT</span>
+            </div>
+          </div>
+
+          <!-- Subtle Geometric Divider -->
+          <div class="brand-separator" aria-hidden="true">
+            <span class="sep-dot"></span>
+          </div>
+
+          <!-- BIGO LIVE -->
+          <div class="brand-unit bigo-unit">
+            <div class="brand-avatar bigo-avatar">
+              <img src="bigo.png" alt="BIGO LIVE" class="avatar-img bigo-fit">
+            </div>
+            <div class="brand-meta">
+              <span class="brand-primary-name">BIGO LIVE</span>
+              <span class="brand-sub-badge cyan-badge">OFFICIAL PARTNER</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sleek Status Capsule -->
+        <div class="header-status-capsule">
+          <div class="status-chip live-chip">
+            <span class="pulse-indicator"></span>
+            <span class="chip-text">Q2 - April 2026</span>
+          </div>
+          <div class="capsule-divider"></div>
+          <div class="status-chip rate-chip">
+            <span class="rate-metric">210 Beans <span class="rate-eq">=</span> $1</span>
+          </div>
+          <div class="capsule-divider"></div>
+          <div class="status-chip fx-chip">
+            <span class="fx-metric">Rp 17.800 <span class="rate-eq">/</span> $</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="main-content">
+      <!-- Open Borderless Hero Banner Section with Rich Beans Backdrop -->
+      <section class="hero-banner-section" aria-label="Hero Banner">
+        <div class="hero-banner-left">
+          <div class="hero-brand-tag">
+            <span class="hero-brand-pulse"></span>
+            <span>ALFA X | BIGO LIVE</span>
+            <span class="hero-year-badge">2026</span>
+          </div>
+          <div class="hero-script-tag">Calculate Your</div>
+          <h1 class="hero-main-title">
+            <span class="hero-title-bigo">BIGO LIVE</span>
+            <span class="hero-title-calc">INCOME CALCULATOR</span>
+          </h1>
+          <p class="hero-subtitle">
+            Hitung estimasi penghasilanmu di BIGO Live dengan mudah dan akurat.
+          </p>
+        </div>
+
+        <!-- 3D Rendered Golden Calculator & Dino Mascot Scene (Seamless herosection.jpg) -->
+        <div class="hero-banner-right" aria-hidden="true"></div>
+      </section>
+
+      <!-- Cockpit Studio Grid -->
+      <div class="cockpit-grid">
+        <!-- LEFT COLUMN: CARD 1 - INPUT DATA -->
+        <div class="cockpit-column column-inputs">
+          <div class="studio-card input-card">
+            <!-- Card 1 Header: 3D Gold Cube 1 + INPUT DATA -->
+            <div class="card-top-bar">
+              <div class="card-heading-group">
+                <div class="gold-cube-badge" aria-hidden="true">1</div>
+                <h2 class="card-title-gold">INPUT DATA</h2>
+              </div>
+            </div>
+
+            <div class="form-body">
+              <!-- 1. KATEGORI HOST (Custom Dropdown) -->
+              <div class="form-block">
+                <div class="block-label-row">
+                  <label class="block-label" id="label-host-status">
+                    <span>KATEGORI HOST</span>
+                    <span class="info-help-btn" title="Pilih kategori masa kerja host" tabindex="0">?</span>
+                  </label>
+                  <span class="status-indicator-badge" id="status-indicator-badge">Bulan 4 sampai seterusnya</span>
+                </div>
+
+                <div class="custom-dropdown" id="custom-status-dropdown" aria-labelledby="label-host-status">
+                  <button 
+                    type="button" 
+                    class="custom-dropdown-trigger" 
+                    id="dropdown-trigger" 
+                    aria-haspopup="listbox" 
+                    aria-expanded="false"
+                  >
+                    <span class="trigger-icon-title">
+                      <svg class="crown-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+                      </svg>
+                      <span class="selected-text" id="dropdown-selected-label">Premium Host (Bulan 4 sampai seterusnya)</span>
+                    </span>
+                    <svg class="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+
+                  <div class="custom-dropdown-menu" id="dropdown-menu" role="listbox" aria-hidden="true">
+                    <div class="custom-dropdown-option" role="option" data-value="new" tabindex="-1">
+                      <div class="option-header-row">
+                        <span class="option-title">New Host (Bulan 1-3)</span>
+                        <span class="option-tag">Persentase (Cap 360K)</span>
+                      </div>
+                      <div class="option-desc">Tier 50%, 85%, hingga 90% dikalikan total Beans. Duration Bonus ditiadakan.</div>
+                    </div>
+                    <div class="custom-dropdown-option selected" role="option" data-value="premium" tabindex="-1" aria-selected="true">
+                      <div class="option-header-row">
+                        <span class="option-title">Premium Host (Bulan 4 sampai seterusnya)</span>
+                        <span class="option-tag gold">Flat &amp; Progresif</span>
+                      </div>
+                      <div class="option-desc">Flat bonus (2K–100K Beans) &amp; persentase (mulai 130K Beans) + Duration Bonus.</div>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" id="host-status-value" value="premium">
+              </div>
+
+              <!-- 2. TARGET BEANS (Strict Custom Numeric Input) -->
+              <div class="form-block">
+                <div class="block-label-row">
+                  <label for="beans-custom-input" class="block-label">
+                    <span>TARGET BEANS</span>
+                    <span class="info-help-btn" title="Masukkan target pencapaian virtual gift Beans" tabindex="0">?</span>
+                  </label>
+                  <span id="beans-formatted" class="formatted-pill">130,000 Beans</span>
+                </div>
+
+                <div class="custom-numeric-field">
+                  <div class="numeric-input-wrapper">
+                    <span class="input-leading-icon" aria-hidden="true">
+                      <!-- 3D Glossy Gold Bean Asset -->
+                      <img src="images/gold_bean.png" alt="Target Beans" class="input-bean-icon" width="22" height="22">
+                    </span>
+                    <input 
+                      type="text" 
+                      id="beans-custom-input" 
+                      class="custom-beans-input" 
+                      value="130,000" 
+                      inputmode="numeric" 
+                      autocomplete="off" 
+                      spellcheck="false"
+                      placeholder="0"
+                    >
+                    <span class="currency-tag">Beans</span>
+                  </div>
+                  <p class="field-hint">Ketik angka murni. Format otomatis ribuan dengan koma (contoh: 130,000).</p>
+                </div>
+              </div>
+
+              <!-- 3 & 4. DURATION CONTROLS: VALID DAYS & VALID HOURS (Khusus Premium Host) -->
+              <div id="duration-inputs-section" class="duration-inputs-section">
+                <!-- Valid Days Input Bar -->
+                <div class="form-block">
+                  <div class="block-label-row">
+                    <label for="valid-days-input" class="block-label" id="label-valid-days">
+                      <span>VALID DAYS</span>
+                      <span class="info-help-btn" title="Hari siaran aktif per bulan (Maksimal 31 hari)" tabindex="0">?</span>
+                    </label>
+                    <span id="days-val-display" class="formatted-pill">15 Days</span>
+                  </div>
+
+                  <div class="custom-numeric-field">
+                    <div class="numeric-input-wrapper">
+                      <span class="input-leading-icon" aria-hidden="true">
+                        <!-- Calendar Icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="gold-stroke">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                      </span>
+                      <input 
+                        type="text" 
+                        id="valid-days-input" 
+                        class="custom-beans-input" 
+                        value="15" 
+                        inputmode="numeric" 
+                        autocomplete="off" 
+                        maxlength="2"
+                        placeholder="15"
+                      >
+                      <span class="currency-tag">Days</span>
+                    </div>
+                    <span id="days-error" class="input-error-msg">Rentang hari siaran harus antara 0 hingga 31 hari.</span>
+                  </div>
+                </div>
+
+                <!-- Valid Hours Input Bar -->
+                <div class="form-block">
+                  <div class="block-label-row">
+                    <label for="valid-hours-input" class="block-label" id="label-valid-hours">
+                      <span>VALID HOURS</span>
+                      <span class="info-help-btn" title="Total durasi jam siaran (Maksimal 155 jam)" tabindex="0">?</span>
+                    </label>
+                    <span id="hours-val-display" class="formatted-pill">40 Hours</span>
+                  </div>
+
+                  <div class="custom-numeric-field">
+                    <div class="numeric-input-wrapper">
+                      <span class="input-leading-icon" aria-hidden="true">
+                        <!-- Timer/Stopwatch Icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="gold-stroke">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                      </span>
+                      <input 
+                        type="text" 
+                        id="valid-hours-input" 
+                        class="custom-beans-input" 
+                        value="40" 
+                        inputmode="decimal" 
+                        autocomplete="off" 
+                        maxlength="5"
+                        placeholder="40"
+                      >
+                      <span class="currency-tag">Hours</span>
+                    </div>
+                    <span id="hours-error" class="input-error-msg">Rentang jam siaran harus antara 0 hingga 155 jam.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions: CALCULATE NOW Button & Reset -->
+              <div class="form-actions-group">
+                <button type="button" id="calculate-btn" class="btn-calculate-now">
+                  <span class="btn-text">CALCULATE NOW</span>
+                  <span class="btn-arrow" aria-hidden="true">❯</span>
+                </button>
+
+                <button type="button" id="reset-btn" class="btn-action-reset">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                  <span>Reset Parameter Standar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: CARD 2 - ESTIMASI PENGHASILAN -->
+        <div class="cockpit-column column-results">
+          <div class="studio-card results-card" id="results-card">
+            <!-- Card 2 Header: 3D Gold Cube 2 + ESTIMASI PENGHASILAN + HASIL ESTIMASI Badge -->
+            <div class="card-top-bar">
+              <div class="card-heading-group">
+                <div class="gold-cube-badge" aria-hidden="true">2</div>
+                <h2 class="card-title-gold">ESTIMASI PENGHASILAN</h2>
+              </div>
+              <div class="result-badge-glow">HASIL ESTIMASI</div>
+            </div>
+
+            <!-- Hero Payout Display: TOTAL ESTIMASI PENGHASILAN -->
+            <div class="hero-income-box">
+              <div class="hero-label-top">TOTAL ESTIMASI PENGHASILAN</div>
+              <div class="hero-values-combined">
+                <span class="hero-idr-wrap">
+                  <span class="hero-currency-tag">Rp</span>
+                  <span id="total-idr-display" class="hero-main-number">0</span>
+                </span>
+                <span class="hero-val-divider">|</span>
+                <span class="hero-usd-wrap">
+                  <span class="hero-usd-symbol">$</span>
+                  <span id="total-usd-display" class="hero-usd-number">0.00</span>
+                </span>
+              </div>
+              <div class="hero-beans-capsule">
+                <span id="total-beans-display">Total 0 Beans</span>
+              </div>
+            </div>
+
+            <!-- Financial Ledger Breakdown with 3D Circular Icons -->
+            <div class="breakdown-ledger-container">
+              <div class="ledger-header-row">
+                <h3 class="ledger-title-text">Rincian Komponen Penghasilan</h3>
+                <div id="status-tier-badge" class="tier-pill">Menunggu Kalkulasi</div>
+              </div>
+
+              <div class="breakdown-rows-list">
+                <!-- Row 1: Target Beans -->
+                <div class="breakdown-item-card">
+                  <div class="item-left-group">
+                    <div class="item-circle-icon target-icon" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="6"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                      </svg>
+                    </div>
+                    <div class="item-text-group">
+                      <div class="item-title">TARGET BEANS</div>
+                      <div class="item-beans-sub" id="breakdown-base-beans">0 Beans</div>
+                    </div>
+                  </div>
+                  <div class="item-right-group">
+                    <div class="item-idr-val" id="row-target-idr">Rp 0</div>
+                    <div class="item-usd-val" id="row-target-usd">$ 0.00</div>
+                  </div>
+                </div>
+
+                <!-- Row 2: Bonus Beans BIGO -->
+                <div class="breakdown-item-card">
+                  <div class="item-left-group">
+                    <div class="item-circle-icon bonus-icon" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                        <rect x="2" y="7" width="20" height="5"></rect>
+                        <line x1="12" y1="22" x2="12" y2="7"></line>
+                        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                      </svg>
+                    </div>
+                    <div class="item-text-group">
+                      <div class="item-title">BONUS BEANS BIGO (GARANSI)</div>
+                      <div class="item-beans-sub">
+                        <span id="breakdown-bonus-beans">+0 Beans</span>
+                        <span class="tier-inline-tag" id="breakdown-bonus-rule">(-)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item-right-group">
+                    <div class="item-idr-val" id="row-bonus-idr">Rp 0</div>
+                    <div class="item-usd-val" id="row-bonus-usd">$ 0.00</div>
+                  </div>
+                </div>
+
+                <!-- Row 3: Bonus Duration (Only for Premium Host) -->
+                <div class="breakdown-item-card" id="duration-bonus-row">
+                  <div class="item-left-group">
+                    <div class="item-circle-icon duration-icon" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                    </div>
+                    <div class="item-text-group">
+                      <div class="item-title">BONUS DURATION</div>
+                      <div class="item-beans-sub">
+                        <span id="breakdown-duration-beans">+0 Beans</span>
+                        <span class="tier-inline-tag" id="breakdown-duration-rule">(-)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item-right-group">
+                    <div class="item-idr-val" id="row-duration-idr">Rp 0</div>
+                    <div class="item-usd-val" id="row-duration-usd">$ 0.00</div>
+                  </div>
+                </div>
+
+                <!-- Row 4: Total Summary Bottom Line -->
+                <div class="breakdown-item-card total-summary-card">
+                  <div class="item-left-group">
+                    <div class="item-circle-icon total-icon" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                      </svg>
+                    </div>
+                    <div class="item-text-group">
+                      <div class="total-label-lead">TOTAL BEANS</div>
+                      <div class="total-beans-bold" id="breakdown-net-beans">0 Beans</div>
+                      <div class="total-subtext-note" id="ledger-beans-subtext">Akumulasi Pencapaian + Bonus Host + Bonus Duration</div>
+                    </div>
+                  </div>
+                  <div class="item-right-group total-side-summary">
+                    <div class="total-summary-label">TOTAL ESTIMASI</div>
+                    <div class="item-idr-total" id="breakdown-net-idr-sum">Rp 0</div>
+                    <div class="item-usd-total" id="breakdown-net-usd-sum">$ 0.00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Smart Opportunity Advisor / Proyeksi Kenaikan Bonus -->
+            <div class="studio-card advisor-card" id="advisor-card">
+              <div class="advisor-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>OPTIMASI PENDAPATAN HOST</span>
+              </div>
+              <p id="advisor-text" class="advisor-text">
+                Silakan masukkan target Beans dan durasi siaran Anda, lalu klik tombol <strong>CALCULATE NOW</strong> untuk melihat estimasi penghasilan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: NOTE PENTING (Full Width Card at Bottom, Matching Reference Mock Image) -->
+      <section class="studio-card note-penting-card" aria-label="Catatan Penting Regulasi">
+        <div class="note-left-col">
+          <div class="note-3d-badge-wrap">
+            <div class="note-3d-icon-box">
+              <!-- 3D Gold Notepad SVG -->
+              <svg width="42" height="42" viewBox="0 0 48 48" fill="none">
+                <rect x="8" y="6" width="32" height="36" rx="6" fill="url(#goldNotepadGrad)" stroke="#FFE28A" stroke-width="2"/>
+                <line x1="16" y1="16" x2="32" y2="16" stroke="#4A3408" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="16" y1="23" x2="32" y2="23" stroke="#4A3408" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="16" y1="30" x2="26" y2="30" stroke="#4A3408" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="34" cy="34" r="8" fill="#141414" stroke="#DFB15B" stroke-width="1.5"/>
+                <path d="M34 29l1.5 3.5 3.5.5-2.5 2.5.6 3.5-3.1-1.7-3.1 1.7.6-3.5-2.5-2.5 3.5-.5z" fill="#FFE28A"/>
+                <defs>
+                  <linearGradient id="goldNotepadGrad" x1="8" y1="6" x2="40" y2="42" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FFE79A"/>
+                    <stop offset="0.5" stop-color="#DFB15B"/>
+                    <stop offset="1" stop-color="#9C6F1E"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="note-title-heading">
+              <span class="note-title-line1">NOTE</span>
+              <span class="note-title-line2">PENTING</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-center-col">
+          <ul class="note-rules-list">
+            <li>Konversi BIGO adalah <strong>210 Beans = 1 USD</strong>.</li>
+            <li>Acuan perhitungan pada Calculator menggunakan kurs <strong>Rp17.800/USD</strong>.</li>
+            <li>Hasil perhitungan estimasi diatas belum termasuk pajak penarikan/biaya administrasi BIGO.</li>
+          </ul>
+        </div>
+
+        <div class="note-right-col">
+          <div class="note-dino-wrap">
+            <img src="images/bigo_dino.png" alt="BIGO Dinosaur Mascot" class="note-dino-img">
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modern Executive Footer (Clean & Slim Single-Bar) -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <div class="footer-single-bar">
+          <div class="footer-brand-lockup">
+            <span class="footer-brand-title">ALFA X BIGO</span>
+            <span class="footer-dot-sep">|</span>
+            <span class="footer-copy-text">Empowering Hosts, Creating Impact.</span>
+          </div>
+
+          <div class="footer-meta-lockup">
+            <span class="footer-tag">Q2-April 2026</span>
+            <span class="footer-dot-sep">•</span>
+            <span class="footer-tag">210 Beans = $1</span>
+            <span class="footer-dot-sep">•</span>
+            <span class="footer-tag">Rp 17.800 / $</span>
+            <button type="button" id="scroll-to-top-btn" class="footer-top-link" aria-label="Kembali ke atas">
+              <span>Ke Atas</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modular JavaScript Architecture (Functional Core, Imperative Shell) -->
+  <script src="js/policy-constants.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/calculation-engine.js"></script>
+  <script src="js/advisor-engine.js"></script>
+  <script src="js/ui-controller.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

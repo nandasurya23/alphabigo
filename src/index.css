@@ -1,0 +1,24 @@
+/* ==========================================================================
+   100% PRESERVED MODULAR CSS SYSTEM - DILARANG DIHAPUS / JANGAN DIREWRITE!
+   Menjaga tampilan visual 3D Gold Luxury, background hero banner,
+   pulse-glow, custom inputs, dan kurva media queries persis seperti aslinya.
+   ========================================================================== */
+@import "./styles/variables.css";
+@import "./styles/base.css";
+@import "./styles/layout.css";
+@import "./styles/components.css";
+@import "./styles/responsive.css";
+
+/* Tailwind CSS v4 - HANYA DIPAKAI SEPERLUNYA SAJA (Utility Helpers Minor) */
+@import "tailwindcss";
+
+@theme {
+  --color-gold-primary: #8B6508;
+  --color-gold-accent: #DFB15B;
+  --color-gold-bright: #FFD700;
+  --color-dark-bg: #0A0A0A;
+  --color-dark-surface: #141414;
+  --color-bigo-cyan: #00D0D4;
+  --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-script: 'Dancing Script', cursive;
+}

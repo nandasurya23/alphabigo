@@ -1,0 +1,36 @@
+/* ==========================================================================
+   ALPHA × BIGO - DESIGN TOKENS & SYSTEM VARIABLES
+   Design Philosophy: Executive Dark Luxury & Clean Fintech (Nevalis Style)
+   Standards: WCAG AA, strict contrast >= 4.5:1, zero AI-slop
+   ========================================================================== */
+
+:root {
+  /* Nevalis Executive Palette */
+  --color-primary: #8B6508;
+  --color-primary-light: #A67C1E;
+  --color-accent: #DFB15B;
+  --color-accent-bright: #FFD700;
+  --color-bg: #0A0A0A;
+  --color-surface: #141414;
+  --color-surface-2: #1C1C1C;
+  --color-surface-elevated: #222222;
+  --color-surface-hover: #262626;
+  --color-text-primary: #F8F8F8;
+  --color-text-secondary: #B4B4B4;
+  --color-text-muted: #8E8E8E;
+  --color-success: #22C55E;
+  --color-danger: #EF4444;
+  --color-cyan: #00D0D4;
+
+  /* Structural Geometry */
+  --border-subtle: 1px solid #222222;
+  --border-medium: 1px solid #303030;
+  --border-accent: 1px solid #DFB15B;
+  --border-gold-subtle: 1px solid #473614;
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
