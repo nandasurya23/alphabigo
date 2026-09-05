@@ -39,8 +39,9 @@ describe('Formatters & Sanitizers', () => {
     expect(formatCurrencyIDR(0)).toBe('0');
   });
 
-  it('formatCurrencyUSD formats USD with 2 decimals', () => {
-    expect(formatCurrencyUSD(939.5238)).toBe('939.52');
-    expect(formatCurrencyUSD(0)).toBe('0.00');
+  it('formatCurrencyUSD formats USD without decimals', () => {
+    expect(formatCurrencyUSD(939.5238)).toBe('939');
+    expect(formatCurrencyUSD(380.95)).toBe('380');
+    expect(formatCurrencyUSD(0)).toBe('0');
   });
 });

@@ -136,14 +136,16 @@ export function calculateDurationBonus(
   status: HostStatus,
   beans: number,
   days: number,
-  hours: number
+  hours: number,
+  daysInMonth: number = 31
 ): DurationBonusResult {
   if (status === 'new') {
     return { bonus: 0, ruleText: 'Tidak berlaku untuk New Host', qualified: false };
   }
 
+  const fullMonthDays = daysInMonth || 31;
   const safeBeans = Math.max(0, Number(beans) || 0);
-  const safeDays = Math.max(0, Math.min(POLICY_CONSTANTS.DAYS_MAX, Number(days) || 0));
+  const safeDays = Math.max(0, Math.min(fullMonthDays, Number(days) || 0));
   const safeHours = Math.max(0, Math.min(POLICY_CONSTANTS.HOURS_MAX, Number(hours) || 0));
 
   if (safeBeans < 5000 || safeDays < 15 || safeHours < 40) {
@@ -154,37 +156,37 @@ export function calculateDurationBonus(
     return { bonus: 0, ruleText: reason, qualified: false };
   }
 
-  if (safeDays === 31) {
+  if (safeDays >= fullMonthDays) {
     if (safeHours >= 110) {
-      if (safeBeans >= 130000) return { bonus: 30000, ruleText: '31 Hari & ≥110 Jam (Tier ≥130K)', qualified: true };
-      if (safeBeans >= 70000)  return { bonus: 20000, ruleText: '31 Hari & ≥110 Jam (Tier 70K–129.9K)', qualified: true };
-      if (safeBeans >= 30000)  return { bonus: 15000, ruleText: '31 Hari & ≥110 Jam (Tier 30K–69.9K)', qualified: true };
-      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: '31 Hari & ≥110 Jam (Tier 10K–29.9K)', qualified: true };
-      return { bonus: 2100, ruleText: '31 Hari & ≥110 Jam (Tier 5K–9.9K)', qualified: true };
+      if (safeBeans >= 130000) return { bonus: 30000, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier ≥130K)`, qualified: true };
+      if (safeBeans >= 70000)  return { bonus: 20000, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 70K–129.9K)`, qualified: true };
+      if (safeBeans >= 30000)  return { bonus: 15000, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 30K–69.9K)`, qualified: true };
+      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 10K–29.9K)`, qualified: true };
+      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 5K–9.9K)`, qualified: true };
     }
 
     if (safeHours >= 90) {
-      if (safeBeans >= 130000) return { bonus: 25000, ruleText: '31 Hari & ≥90 Jam (Tier ≥130K)', qualified: true };
-      if (safeBeans >= 70000)  return { bonus: 15000, ruleText: '31 Hari & ≥90 Jam (Tier 70K–129.9K)', qualified: true };
-      if (safeBeans >= 30000)  return { bonus: 10000, ruleText: '31 Hari & ≥90 Jam (Tier 30K–69.9K)', qualified: true };
-      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: '31 Hari & ≥90 Jam (Tier 10K–29.9K)', qualified: true };
-      return { bonus: 2100, ruleText: '31 Hari & ≥90 Jam (Tier 5K–9.9K)', qualified: true };
+      if (safeBeans >= 130000) return { bonus: 25000, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier ≥130K)`, qualified: true };
+      if (safeBeans >= 70000)  return { bonus: 15000, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 70K–129.9K)`, qualified: true };
+      if (safeBeans >= 30000)  return { bonus: 10000, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 30K–69.9K)`, qualified: true };
+      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 10K–29.9K)`, qualified: true };
+      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 5K–9.9K)`, qualified: true };
     }
 
     if (safeHours >= 70) {
-      if (safeBeans >= 130000) return { bonus: 20000, ruleText: '31 Hari & ≥70 Jam (Tier ≥130K)', qualified: true };
-      if (safeBeans >= 70000)  return { bonus: 10000, ruleText: '31 Hari & ≥70 Jam (Tier 70K–129.9K)', qualified: true };
-      if (safeBeans >= 30000)  return { bonus: 10000, ruleText: '31 Hari & ≥70 Jam (Tier 30K–69.9K)', qualified: true };
-      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: '31 Hari & ≥70 Jam (Tier 10K–29.9K)', qualified: true };
-      return { bonus: 2100, ruleText: '31 Hari & ≥70 Jam (Tier 5K–9.9K)', qualified: true };
+      if (safeBeans >= 130000) return { bonus: 20000, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier ≥130K)`, qualified: true };
+      if (safeBeans >= 70000)  return { bonus: 10000, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 70K–129.9K)`, qualified: true };
+      if (safeBeans >= 30000)  return { bonus: 10000, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 30K–69.9K)`, qualified: true };
+      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 10K–29.9K)`, qualified: true };
+      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 5K–9.9K)`, qualified: true };
     }
 
     if (safeHours >= 50) {
-      if (safeBeans >= 10000) return { bonus: 5000, ruleText: '31 Hari & ≥50 Jam (Tier ≥10K)', qualified: true };
-      return { bonus: 2100, ruleText: '31 Hari & ≥50 Jam (Tier 5K–9.9K)', qualified: true };
+      if (safeBeans >= 10000) return { bonus: 5000, ruleText: `${fullMonthDays} Hari & ≥50 Jam (Tier ≥10K)`, qualified: true };
+      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥50 Jam (Tier 5K–9.9K)`, qualified: true };
     }
 
-    return { bonus: 1000, ruleText: '31 Hari & 40–49.9 Jam (Flat 1,000)', qualified: true };
+    return { bonus: 1000, ruleText: `${fullMonthDays} Hari & 40–49.9 Jam (Flat 1,000)`, qualified: true };
   }
 
   return {
@@ -206,14 +208,16 @@ export function calculateEstimatedIncome(
   status: HostStatus,
   beans: number,
   days: number = 15,
-  hours: number = 40
+  hours: number = 40,
+  daysInMonth: number = 31
 ): CalculationResult {
+  const fullMonthDays = daysInMonth || 31;
   const safeBeans = Math.max(0, Number(beans) || 0);
-  const safeDays = Math.max(0, Math.min(POLICY_CONSTANTS.DAYS_MAX, Number(days) || 0));
+  const safeDays = Math.max(0, Math.min(fullMonthDays, Number(days) || 0));
   const safeHours = Math.max(0, Math.min(POLICY_CONSTANTS.HOURS_MAX, Number(hours) || 0));
 
   const hostBonusResult = calculateHostBonus(status, safeBeans, safeDays, safeHours);
-  const durationBonusResult = calculateDurationBonus(status, safeBeans, safeDays, safeHours);
+  const durationBonusResult = calculateDurationBonus(status, safeBeans, safeDays, safeHours, fullMonthDays);
 
   // Duration bonus hanya berlaku untuk status Premium Host (Sesuai Brief Poin D)
   const effectiveDurationBonus = status === 'premium' ? durationBonusResult.bonus : 0;

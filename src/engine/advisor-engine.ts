@@ -10,8 +10,10 @@ export function generateAdvisorRecommendation(
   status: HostStatus,
   beans: number,
   days: number,
-  hours: number
+  hours: number,
+  daysInMonth: number = 30
 ): string {
+  const fullMonthDays = daysInMonth || 30;
   const safeBeans = Math.max(0, Number(beans) || 0);
   const safeDays = Math.max(0, Number(days) || 0);
   const safeHours = Math.max(0, Number(hours) || 0);
@@ -67,11 +69,11 @@ export function generateAdvisorRecommendation(
     return `Target berikutnya: Capai <strong>1,200,000 Beans</strong> untuk membuka tier bonus super <strong>62%</strong>!`;
   }
 
-  if (safeDays < 31) {
-    return `Syarat dasar terpenuhi (+1,000 Beans). Siaran setiap hari hingga <strong>31 hari penuh</strong> untuk melipatgandakan Duration Bonus hingga <strong>30,000 Beans</strong>!`;
+  if (safeDays < fullMonthDays) {
+    return `Syarat dasar terpenuhi (+1,000 Beans). Siaran setiap hari hingga <strong>${fullMonthDays} hari penuh</strong> untuk melipatgandakan Duration Bonus hingga <strong>30,000 Beans</strong>!`;
   }
 
-  // Days === 31
+  // Days === fullMonthDays
   if (safeHours < 50) {
     const needH = Math.round((50 - safeHours) * 10) / 10;
     return `Hanya butuh <strong>+${needH} jam lagi</strong> untuk membuka Duration Bonus tier 50 Jam (+${safeBeans >= 10000 ? '5,000' : '2,100'} Beans)!`;
@@ -89,5 +91,5 @@ export function generateAdvisorRecommendation(
     return `Tinggal <strong>+${needH} jam lagi</strong> untuk mengunci DURATION BONUS MAKSIMAL (30,000 Beans)!`;
   }
 
-  return `Pencapaian luar biasa! Anda telah mengunci tier Duration Bonus tertinggi (31 Hari Penuh & ≥110 Jam Siaran)!`;
+  return `Pencapaian luar biasa! Anda telah mengunci tier Duration Bonus tertinggi (${fullMonthDays} Hari Penuh & ≥110 Jam Siaran)!`;
 }

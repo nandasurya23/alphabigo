@@ -4,6 +4,8 @@ import { formatDecimal, sanitizeDigitsOnly, sanitizeDecimal } from '@/engine/for
 interface DurationInputsSectionProps {
   days: number;
   hours: number;
+  daysInMonth?: number;
+  monthName?: string;
   onDaysChange: (days: number) => void;
   onHoursChange: (hours: number) => void;
   onCalculate: () => void;
@@ -12,11 +14,14 @@ interface DurationInputsSectionProps {
 export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React.memo(({
   days,
   hours,
+  daysInMonth = 30,
+  monthName = 'Berjalan',
   onDaysChange,
   onHoursChange,
   onCalculate,
 }) => {
-  const isDaysInvalid = days < 0 || days > 31;
+  const maxDays = daysInMonth || 30;
+  const isDaysInvalid = days < 0 || days > maxDays;
   const isHoursInvalid = hours < 0 || hours > 155;
 
   const handleDaysKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -66,14 +71,14 @@ export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React
             <span>VALID DAYS</span>
             <span
               className="info-help-btn"
-              title="Hari siaran aktif per bulan (Maksimal 31 hari)"
+              title={`Hari siaran aktif bulan ${monthName} (Maksimal ${maxDays} hari)`}
               tabIndex={0}
             >
               ?
             </span>
           </label>
           <span id="days-val-display" className="formatted-pill">
-            {days} Days
+            {days} / {maxDays} Days
           </span>
         </div>
 
@@ -124,13 +129,13 @@ export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React
             <span className="currency-tag">Days</span>
           </div>
           <p className="field-hint">
-            Jumlah hari siaran aktif per bulan (Contoh: 15 hari, maks 31).
+            Jumlah hari siaran aktif bulan {monthName} (Maksimal {maxDays} hari kalender - Full Day Live tanpa libur).
           </p>
           <span
             id="days-error"
             className={`input-error-msg ${isDaysInvalid ? 'visible' : ''}`}
           >
-            Rentang hari siaran harus antara 0 hingga 31 hari.
+            Rentang hari siaran bulan {monthName} harus antara 0 hingga {maxDays} hari.
           </span>
         </div>
       </div>

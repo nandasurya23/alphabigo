@@ -209,40 +209,41 @@
 
 .hero-banner-section {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  text-align: center;
   position: relative;
   border-radius: var(--radius-lg);
-  background-color: #070604;
-  background-image: url('/images/herosection.webp');
-  background-position: right center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  border: 1px solid rgba(223, 177, 91, 0.16);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(180deg, #110E08 0%, #070604 100%);
+  border: 1px solid rgba(223, 177, 91, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 229, 143, 0.08);
   overflow: hidden;
-  min-height: 320px;
-  padding: 36px 40px;
+  padding: 38px 24px;
   width: 100%;
   box-sizing: border-box;
 }
 
+.hero-banner-content,
 .hero-banner-left {
-  flex: 1 1 54%;
-  max-width: 58%;
-  min-width: 0;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  z-index: 2;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
   position: relative;
+  z-index: 2;
 }
 
 .hero-brand-tag {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  font-size: 0.82rem;
+  font-size: clamp(0.72rem, 1.5vw, 0.82rem);
   font-weight: 800;
   letter-spacing: 0.14em;
   color: var(--color-accent);
@@ -256,100 +257,29 @@
   border-radius: 50%;
   background-color: var(--color-accent);
   box-shadow: 0 0 10px var(--color-accent);
-}
-
-.hero-year-badge {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 900;
-  color: #120E05;
-  background: linear-gradient(135deg, #FFE58F 0%, #DFB15B 100%);
-  padding: 1px 8px;
-  border-radius: 9999px;
-  letter-spacing: 0.04em;
-  margin-left: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-.hero-script-tag {
-  font-family: 'Dancing Script', cursive, sans-serif;
-  font-size: clamp(2.1rem, 4vw, 2.9rem);
-  font-weight: 700;
-  color: #F8E3BA;
-  line-height: 1.1;
-  transform: rotate(-1.5deg);
-  display: inline-block;
-  text-shadow: 0 0 20px rgba(223, 177, 91, 0.45);
+  flex-shrink: 0;
 }
 
 .hero-main-title {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin: 2px 0 6px 0;
-}
-
-.hero-title-bigo {
-  font-size: clamp(2.6rem, 6.5vw, 4.4rem);
+  font-size: clamp(1.8rem, 4.5vw, 2.85rem);
   font-weight: 900;
-  letter-spacing: -0.01em;
-  line-height: 1;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  margin: 4px 0 6px 0;
   background: linear-gradient(180deg, #FFF8E1 0%, #DFB15B 50%, #9C6F1E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 18px rgba(223, 177, 91, 0.4));
-}
-
-.hero-title-calc {
-  font-size: clamp(1.4rem, 3.8vw, 2.2rem);
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #FFFFFF;
-  line-height: 1.1;
+  filter: drop-shadow(0 4px 18px rgba(223, 177, 91, 0.35));
 }
 
 .hero-subtitle {
-  font-size: clamp(0.92rem, 2vw, 1.08rem);
+  font-size: clamp(0.75rem, 1.6vw, 0.88rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
   color: var(--color-text-secondary);
-  font-weight: 500;
-  line-height: 1.5;
-  margin-top: 6px;
-  max-width: 520px;
-}
-
-/* 3D Render Stage - Positioned Flush at Bottom Right Corner */
-.hero-banner-right {
-  position: absolute;
-  right: 18px;
-  bottom: 0;
-  height: 100%;
-  width: 44%;
-  max-width: 460px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end; /* Nempel kebawah */
-  pointer-events: none;
-  z-index: 1;
-}
-
-.hero-render-stage {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  position: relative;
-}
-
-.hero-render-img {
-  max-height: 330px;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: right bottom;
-  display: block;
-  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 25px rgba(223, 177, 91, 0.25));
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* ==========================================================================

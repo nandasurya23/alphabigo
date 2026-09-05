@@ -319,4 +319,33 @@ describe('BIGO Calculation Engine - Boundaries & Prorata', () => {
     expect(res.bonus).toBe(0); // < 5000 beans
     expect(res.qualified).toBe(false);
   });
+
+  describe('Dynamic Month Days Duration Bonus (Full Day Live Tanpa Libur)', () => {
+    it('Bulan 30 Hari (Contoh: April): 30 hari & 110 jam berhak bonus 30,000 Beans', () => {
+      const res = calculateDurationBonus('premium', 130000, 30, 110, 30);
+      expect(res.bonus).toBe(30000);
+      expect(res.ruleText).toBe('30 Hari & ≥110 Jam (Tier ≥130K)');
+      expect(res.qualified).toBe(true);
+    });
+
+    it('Bulan 29 Hari (Contoh: Februari Kabisat): 29 hari & 110 jam berhak bonus 30,000 Beans', () => {
+      const res = calculateDurationBonus('premium', 130000, 29, 110, 29);
+      expect(res.bonus).toBe(30000);
+      expect(res.ruleText).toBe('29 Hari & ≥110 Jam (Tier ≥130K)');
+      expect(res.qualified).toBe(true);
+    });
+
+    it('Bulan 28 Hari (Contoh: Februari Standard): 28 hari & 90 jam berhak bonus 25,000 Beans', () => {
+      const res = calculateDurationBonus('premium', 130000, 28, 90, 28);
+      expect(res.bonus).toBe(25000);
+      expect(res.ruleText).toBe('28 Hari & ≥90 Jam (Tier ≥130K)');
+      expect(res.qualified).toBe(true);
+    });
+
+    it('Bulan 31 Hari: 30 hari siaran belum mencapai Full Day Live 31 hari', () => {
+      const res = calculateDurationBonus('premium', 130000, 30, 110, 31);
+      expect(res.bonus).toBe(1000); // Hanya memenuhi syarat dasar >=15d & >=40h
+      expect(res.ruleText).toContain('Syarat Dasar Terpenuhi');
+    });
+  });
 });

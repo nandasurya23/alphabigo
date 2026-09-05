@@ -6,6 +6,8 @@ import { DurationInputsSection } from './DurationInputsSection';
 
 interface InputPanelProps {
   status: HostStatus;
+  monthName: string;
+  daysInMonth: number;
   beans: number;
   days: number;
   hours: number;
@@ -19,6 +21,8 @@ interface InputPanelProps {
 
 export const InputPanel: React.FC<InputPanelProps> = React.memo(({
   status,
+  monthName,
+  daysInMonth,
   beans,
   days,
   hours,
@@ -53,16 +57,16 @@ export const InputPanel: React.FC<InputPanelProps> = React.memo(({
             onCalculate={onCalculate}
           />
 
-          {/* 3 & 4. Duration Controls (Only if Premium Host) */}
-          {status === 'premium' && (
-            <DurationInputsSection
-              days={days}
-              hours={hours}
-              onDaysChange={onDaysChange}
-              onHoursChange={onHoursChange}
-              onCalculate={onCalculate}
-            />
-          )}
+          {/* 3 & 4. Duration Controls (VALID DAYS & VALID HOURS) */}
+          <DurationInputsSection
+            days={days}
+            hours={hours}
+            daysInMonth={daysInMonth}
+            monthName={monthName}
+            onDaysChange={onDaysChange}
+            onHoursChange={onHoursChange}
+            onCalculate={onCalculate}
+          />
 
           {/* Form Actions: CALCULATE NOW Button & Reset */}
           <div className="form-actions-group">

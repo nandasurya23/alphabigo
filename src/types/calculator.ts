@@ -10,6 +10,7 @@ export interface CalculationInput {
   readonly beans: number;
   readonly days: number;
   readonly hours: number;
+  readonly monthDays?: number;
 }
 
 export interface HostBonusResult {
