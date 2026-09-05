@@ -10,9 +10,9 @@ export const AppFooter: React.FC = React.memo(() => {
       <div className="footer-container">
         <div className="footer-single-bar">
           <div className="footer-brand-lockup">
-            <span className="footer-brand-title">ALFA X BIGO</span>
+            <span className="footer-brand-title">ALPHA X BIGO</span>
             <span className="footer-dot-sep">|</span>
-            <span className="footer-copy-text">Empowering Hosts, Creating Impact.</span>
+            <span className="footer-copy-text">© Created by Alpha Entertainment</span>
           </div>
 
           <div className="footer-meta-lockup">

@@ -9,7 +9,7 @@ interface HeroIncomeBoxProps {
 
 export const HeroIncomeBox: React.FC<HeroIncomeBoxProps> = React.memo(({ result, isCalculated }) => {
   const displayIdr = isCalculated ? formatCurrencyIDR(result.idrValue) : '0';
-  const displayUsd = isCalculated ? formatCurrencyUSD(result.usdValue) : '0.00';
+  const displayUsd = isCalculated ? formatCurrencyUSD(result.usdValue) : '0';
   const displayBeans = isCalculated ? formatComma(result.totalBeans) : '0';
 
   return (

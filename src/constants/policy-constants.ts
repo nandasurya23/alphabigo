@@ -29,6 +29,36 @@ export const POLICY_CONSTANTS: PolicyConstants = {
 };
 
 /**
+ * Mendapatkan informasi bulan berjalan secara otomatis dan akurat
+ * termasuk penanganan tahun kabisat via kalender native JS.
+ */
+export function getCurrentMonthInfo(date: Date = new Date()) {
+  const year = date.getFullYear();
+  const monthIndex = date.getMonth(); // 0 - 11
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const MONTH_NAMES = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+  return {
+    monthIndex,
+    monthName: MONTH_NAMES[monthIndex],
+    year,
+    daysInMonth,
+  };
+}
+
+/**
  * New Host Percentage Tiers (Bulan 1–3) - Tabel A.1
  */
 export const NEW_HOST_TIERS: readonly NewHostTierPolicy[] = [

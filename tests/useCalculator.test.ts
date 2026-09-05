@@ -105,4 +105,14 @@ describe('useCalculator Hook - Initial Zero/Unselected & Deferred Calculation', 
     expect(result.current.result.totalBeans).toBe(0);
     expect(result.current.result.idrValue).toBe(0);
   });
+
+  it('TC-UI-06: useCalculator otomatis menyediakan daysInMonth dan monthName realtime', () => {
+    const { result } = renderHook(() => useCalculator());
+
+    expect(typeof result.current.daysInMonth).toBe('number');
+    expect(result.current.daysInMonth).toBeGreaterThanOrEqual(28);
+    expect(result.current.daysInMonth).toBeLessThanOrEqual(31);
+    expect(typeof result.current.monthName).toBe('string');
+    expect(result.current.monthName.length).toBeGreaterThan(0);
+  });
 });

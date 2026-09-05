@@ -140,7 +140,7 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
         </div>
       </div>
       <p className="field-hint" style={{ marginTop: '8px' }}>
-        Pilih kategori masa kerja Anda di BIGO Live (New Host: Bulan 1–3, atau Premium: Bulan 4+).
+        Pilih kategori host kamu di BIGO LIVE (New Host: Bulan 1–3, atau Premium: Bulan 4+).
       </p>
     </div>
   );

@@ -8,10 +8,6 @@ import { safeTruncateInput } from '@/utils/security';
 // Module-level cached formatters to eliminate repeated initialization allocations
 const COMMA_FORMATTER = new Intl.NumberFormat('en-US');
 const IDR_FORMATTER = new Intl.NumberFormat('id-ID');
-const USD_FORMATTER = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 export function formatComma(val: number): string {
   if (typeof val !== 'number' || !Number.isFinite(val)) return '0';
@@ -50,6 +46,6 @@ export function formatCurrencyIDR(val: number): string {
 }
 
 export function formatCurrencyUSD(val: number): string {
-  if (typeof val !== 'number' || !Number.isFinite(val)) return '0.00';
-  return USD_FORMATTER.format(val);
+  if (typeof val !== 'number' || !Number.isFinite(val) || val <= 0) return '0';
+  return COMMA_FORMATTER.format(Math.floor(val));
 }

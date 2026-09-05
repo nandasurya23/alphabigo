@@ -100,7 +100,7 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
               </svg>
             </div>
             <div className="item-text-group">
-              <div className="item-title">BONUS BEANS BIGO (GARANSI)</div>
+              <div className="item-title">BONUS BEANS BIGO</div>
               <div className="item-beans-sub">
                 <span id="breakdown-bonus-beans">
                   {isCalculated ? `+${formatComma(hostBonus)} Beans` : '+0 Beans'}

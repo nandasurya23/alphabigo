@@ -162,7 +162,7 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
           <span className="currency-tag">Beans</span>
         </div>
         <p className="field-hint">
-          Ketik angka target Beans Anda (Contoh: 130,000). Pemisah koma terformat otomatis.
+          Ketik angka target Beans kamu (Contoh: 130,000). Pemisah koma terformat otomatis.
         </p>
       </div>
     </div>

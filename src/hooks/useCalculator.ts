@@ -9,6 +9,7 @@ import { HostStatus, CalculationResult } from '@/types/calculator';
 import { calculateEstimatedIncome } from '@/engine/calculation-engine';
 import { generateAdvisorRecommendation } from '@/engine/advisor-engine';
 import { safeClampNumber, MAX_SAFE_BEANS } from '@/utils/security';
+import { getCurrentMonthInfo } from '@/constants/policy-constants';
 
 const ZERO_CALCULATION_RESULT: CalculationResult = {
   tierName: 'Menunggu Kalkulasi',
@@ -38,6 +39,11 @@ export function useCalculator() {
 
   // Status apakah perhitungan sudah dieksekusi via tombol CALCULATE NOW atau Enter
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
+
+  // Otomatis mengambil data bulan berjalan (real-time now)
+  const currentMonth = useMemo(() => getCurrentMonthInfo(), []);
+  const daysInMonth = currentMonth.daysInMonth;
+  const monthName = currentMonth.monthName;
 
   // Reset estimasi ke 0 setiap kali input diubah oleh user
   const setStatus = useCallback((newStatus: HostStatus) => {
@@ -71,20 +77,20 @@ export function useCalculator() {
       return ZERO_CALCULATION_RESULT;
     }
     const clampedBeans = safeClampNumber(beans, 0, MAX_SAFE_BEANS);
-    const clampedDays = safeClampNumber(days, 0, 31);
+    const clampedDays = safeClampNumber(days, 0, daysInMonth);
     const clampedHours = safeClampNumber(hours, 0, 155);
-    return calculateEstimatedIncome(status, clampedBeans, clampedDays, clampedHours);
-  }, [isCalculated, status, beans, days, hours]);
+    return calculateEstimatedIncome(status, clampedBeans, clampedDays, clampedHours, daysInMonth);
+  }, [isCalculated, status, beans, days, hours, daysInMonth]);
 
   const advisorText = useMemo(() => {
     if (!isCalculated || !status) {
       return WAITING_ADVISOR_TEXT;
     }
     const clampedBeans = safeClampNumber(beans, 0, MAX_SAFE_BEANS);
-    const clampedDays = safeClampNumber(days, 0, 31);
+    const clampedDays = safeClampNumber(days, 0, daysInMonth);
     const clampedHours = safeClampNumber(hours, 0, 155);
-    return generateAdvisorRecommendation(status, clampedBeans, clampedDays, clampedHours);
-  }, [isCalculated, status, beans, days, hours]);
+    return generateAdvisorRecommendation(status, clampedBeans, clampedDays, clampedHours, daysInMonth);
+  }, [isCalculated, status, beans, days, hours, daysInMonth]);
 
   const resetToStandard = useCallback(() => {
     setStatusState('');
@@ -97,6 +103,8 @@ export function useCalculator() {
   return {
     status,
     setStatus,
+    monthName,
+    daysInMonth,
     beans,
     setBeans,
     days,

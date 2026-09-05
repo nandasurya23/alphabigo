@@ -82,6 +82,9 @@ export const NotePentingCard: React.FC = React.memo(() => {
             Acuan perhitungan pada Calculator menggunakan kurs <strong>Rp17.800/USD</strong>.
           </li>
           <li>
+            Kurs dapat berubah mengikuti kurs BIGO atau nilai tukar USD/IDR.
+          </li>
+          <li>
             Hasil perhitungan estimasi diatas belum termasuk pajak penarikan/biaya administrasi BIGO.
           </li>
         </ul>
