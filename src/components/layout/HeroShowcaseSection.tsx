@@ -5,8 +5,8 @@ export const HeroShowcaseSection: React.FC = React.memo(() => {
     <section className="hero-banner-section" aria-label="Hero Banner">
       <div className="hero-banner-content">
         <div className="hero-brand-tag">
-          <span className="hero-brand-pulse"></span>
-          <span>ALPHA ENTERTAINMENT x BIGO LIVE</span>
+          {/* <span className="hero-brand-pulse"></span>
+          <span>ALPHA ENTERTAINMENT x BIGO LIVE</span> */}
         </div>
         <h1 className="hero-main-title">HOST INCOME CALCULATOR</h1>
         <p className="hero-subtitle">
