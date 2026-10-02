@@ -37,15 +37,15 @@ describe('useCalculator Hook - Initial Zero/Unselected & Deferred Calculation', 
     });
 
     expect(result.current.isCalculated).toBe(true);
-    expect(result.current.result.tierName).toBe('Premium: 51% (130K - 149.9K Beans)');
+    expect(result.current.result.tierName).toBe('Old Host: 50.5% (100K – 199.9K Beans)');
     expect(result.current.result.baseBeans).toBe(130000);
-    expect(result.current.result.hostBonus).toBe(66300);
-    expect(result.current.result.durationBonus).toBe(1000);
-    expect(result.current.result.totalBeans).toBe(197300);
-    expect(result.current.result.idrValue).toBe(16723524);
+    expect(result.current.result.hostBonus).toBe(65650);
+    expect(result.current.result.durationBonus).toBe(0);
+    expect(result.current.result.totalBeans).toBe(195650);
+    expect(result.current.result.idrValue).toBe(16583667);
   });
 
-  it('TC-UI-04: Mengubah input mereset nilai estimasi kembali ke 0', () => {
+  it('TC-UI-04: Mengubah input membutuhkan eksekusi calculate() untuk memperbarui hasil estimasi', () => {
     const { result } = renderHook(() => useCalculator());
 
     // Setup dan hitung
@@ -57,26 +57,24 @@ describe('useCalculator Hook - Initial Zero/Unselected & Deferred Calculation', 
       result.current.calculate();
     });
     expect(result.current.isCalculated).toBe(true);
-    expect(result.current.result.totalBeans).toBe(197300);
+    expect(result.current.result.totalBeans).toBe(195650);
 
-    // Ubah target beans
+    // Ubah target beans (tidak otomatis real-time sebelum calculate ditekan)
     act(() => {
       result.current.setBeans(200000);
     });
 
-    // Otomatis kembali ke 0 (deferred)
-    expect(result.current.isCalculated).toBe(false);
-    expect(result.current.result.totalBeans).toBe(0);
-    expect(result.current.result.idrValue).toBe(0);
-    expect(result.current.result.tierName).toBe('Menunggu Kalkulasi');
+    // Hasil perhitungan lama tetap stabil sebelum tombol calculate ditekan
+    expect(result.current.result.baseBeans).toBe(130000);
 
-    // Hitung ulang dengan nilai baru
+    // Eksekusi calculate dengan nilai baru
     act(() => {
       result.current.calculate();
     });
     expect(result.current.isCalculated).toBe(true);
     expect(result.current.result.baseBeans).toBe(200000);
-    expect(result.current.result.hostBonus).toBe(102000); // 51% of 200,000
+    expect(result.current.result.hostBonus).toBe(104000); // 52% of 200,000
+    expect(result.current.result.totalBeans).toBe(304000);
   });
 
   it('TC-UI-05: Reset Parameter Standar mengembalikan form ke 0 dan mereset estimasi ke 0', () => {

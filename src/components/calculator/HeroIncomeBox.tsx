@@ -7,13 +7,20 @@ interface HeroIncomeBoxProps {
   isCalculated: boolean;
 }
 
-export const HeroIncomeBox: React.FC<HeroIncomeBoxProps> = React.memo(({ result, isCalculated }) => {
+export const HeroIncomeBox: React.FC<HeroIncomeBoxProps> = React.memo(({
+  result,
+  isCalculated,
+}) => {
   const displayIdr = isCalculated ? formatCurrencyIDR(result.idrValue) : '0';
   const displayUsd = isCalculated ? formatCurrencyUSD(result.usdValue) : '0';
   const displayBeans = isCalculated ? formatComma(result.totalBeans) : '0';
 
   return (
-    <div className="hero-income-box" aria-live="polite" aria-atomic="true">
+    <div
+      className="hero-income-box"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       <div className="hero-label-top">TOTAL ESTIMASI PENGHASILAN</div>
       <div className="hero-values-combined">
         <span className="hero-idr-wrap">

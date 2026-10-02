@@ -3,22 +3,37 @@
  * Policy definitions for tiers, bonus caps, and constants
  */
 
-export interface NewHostTierPolicy {
+export interface OfficialHostTierPolicy {
   readonly minBeans: number;
   readonly rate: number;
   readonly label: string;
+}
+
+// Backward compatibility aliases
+export type NewHostTierPolicy = OfficialHostTierPolicy;
+export type PremiumPercentTierPolicy = OfficialHostTierPolicy;
+
+export interface NewHostExtraBonusPolicy {
+  readonly minBeans: number;
+  readonly maxBeans: number;
+  readonly bonusBeans: number;
+  readonly bonusIdrEstimate: number;
+  readonly label: string;
+}
+
+export interface DurationBonusTierPolicy {
+  readonly minBeans: number;
+  readonly maxBeans?: number;
+  readonly tierName: string;
+  readonly label: string;
+  readonly bonus20d70h: number;
+  readonly bonus25d90h: number;
+  readonly bonusFullMonth110h: number;
 }
 
 export interface PremiumFlatTierPolicy {
   readonly minBeans: number;
   readonly flatBonus: number;
-  readonly agencyBonus?: number;
-  readonly label: string;
-}
-
-export interface PremiumPercentTierPolicy {
-  readonly minBeans: number;
-  readonly rate: number;
   readonly agencyBonus?: number;
   readonly label: string;
 }
@@ -41,7 +56,7 @@ export interface PolicyConstants {
   readonly EXCHANGE_RATE_BEANS_TO_USD: 210;
   readonly BEANS_PER_USD: 210;
   readonly USD_TO_IDR_RATE: 17800;
-  readonly NEW_HOST_BONUS_CAP: 360000;
+  readonly NEW_HOST_BONUS_CAP?: number;
   readonly MIN_VALID_DAYS: 15;
   readonly MIN_VALID_HOURS: 40;
   readonly PRORATA_MIN_DAYS: 10;
@@ -51,3 +66,4 @@ export interface PolicyConstants {
   readonly HOURS_MIN: 0;
   readonly HOURS_MAX: 155;
 }
+

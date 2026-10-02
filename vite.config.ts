@@ -32,10 +32,11 @@ export default defineConfig({
     target: 'es2022',
     cssMinify: true,
     minify: 'esbuild',
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
+          'vendor-react': ['react', 'react-dom', 'react-dom/client'],
           'vendor-security': ['dompurify'],
         },
       },

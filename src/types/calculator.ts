@@ -34,6 +34,8 @@ export interface CalculationResult {
   readonly hostBonusQualified: boolean;
   readonly isProrata: boolean;
   readonly tierName: string;
+  readonly newHostExtraBonus: number;
+  readonly newHostExtraBonusRule: string;
   readonly durationBonus: number;
   readonly durationBonusRule: string;
   readonly durationQualified: boolean;
@@ -42,3 +44,4 @@ export interface CalculationResult {
   readonly idrValue: number;
   readonly totalIncomeIdr: number;
 }
+

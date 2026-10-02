@@ -20,6 +20,7 @@ export const CockpitGrid: React.FC<CockpitGridProps> = ({ calculator }) => {
     hours,
     setHours,
     isCalculated,
+    calcTrigger,
     calculate,
     result,
     advisorText,
@@ -46,6 +47,7 @@ export const CockpitGrid: React.FC<CockpitGridProps> = ({ calculator }) => {
         status={status}
         result={result}
         isCalculated={isCalculated}
+        calcTrigger={calcTrigger}
         advisorText={advisorText}
       />
     </div>
