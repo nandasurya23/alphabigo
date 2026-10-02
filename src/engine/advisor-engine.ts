@@ -1,7 +1,7 @@
 /**
  * ALPHA × BIGO HOST INCOME CALCULATOR - SMART OPPORTUNITY ADVISOR
  * Target Maximization, Beans Tier Upgrades & Duration Bonus Strategy
- * Compliant with Owner Brief: Focuses purely on Host Beans Commissions & Duration Bonuses
+ * Compliant with October 2026 Official Policy
  */
 
 import { HostStatus } from '@/types/calculator';
@@ -18,11 +18,11 @@ export function generateAdvisorRecommendation(
   const safeDays = Math.max(0, Number(days) || 0);
   const safeHours = Math.max(0, Number(hours) || 0);
 
-  // Kualifikasi Jam & Hari untuk Komisi Penuh (A.3.d & A.4.a)
+  // 1. Kualifikasi Durasi untuk Old Host di Tabel A
   if (status === 'premium') {
     if (safeHours < 40) {
       const needHours = Math.round((40 - safeHours) * 10) / 10;
-      return `⚠️ <strong>Peringatan Durasi Siaran:</strong> Anda baru mencapai ${safeHours} jam. Tambah <strong>+${needHours} jam lagi</strong> untuk mencapai minimal 40 jam siaran valid agar seluruh bonus komisi bulanan tidak hangus!`;
+      return `⚠️ <strong>Peringatan Durasi Siaran:</strong> Anda baru mencapai ${safeHours} jam. Tambah <strong>+${needHours} jam lagi</strong> untuk mencapai minimal 40 jam siaran valid agar komisi pokok bulanan dapat dicairkan!`;
     }
     if (safeDays < 10) {
       const needDays = 10 - safeDays;
@@ -33,63 +33,48 @@ export function generateAdvisorRecommendation(
     }
   }
 
+  // 2. Rekomendasi Khusus New Host (Extra Bonus New Host)
   if (status === 'new') {
+    if (safeBeans < 2000) {
+      return `Kumpulkan minimal <strong>2,000 Beans</strong> untuk membuka komisi dasar 45% (Bebas jam & hari siaran di bulan pertama)!`;
+    }
     if (safeBeans < 5000) {
-      return `Target berikutnya: Capai <strong>5,000 Beans</strong> untuk menaikkan persentase bonus dari 50% menjadi <strong>85%</strong>!`;
+      return `Peluang Extra Bonus: Capai <strong>5,000 Beans</strong> untuk membuka Extra Bonus New Host (+1,000 Beans) dan naik ke tier <strong>46%</strong>!`;
+    }
+    if (safeBeans < 10000) {
+      return `Target berikutnya: Capai <strong>10,000 Beans</strong> untuk menaikkan Extra Bonus New Host menjadi <strong>+2,500 Beans</strong> (Tier 46.5%)!`;
+    }
+    if (safeBeans < 50000) {
+      return `Target berikutnya: Capai <strong>50,000 Beans</strong> untuk klaim Extra Bonus New Host <strong>+15,000 Beans</strong> (Tier 48%)!`;
     }
     if (safeBeans < 100000) {
-      return `Target berikutnya: Capai <strong>100,000 Beans</strong> untuk mengunci persentase bonus tertinggi New Host sebesar <strong>90%</strong>!`;
+      return `Target berikutnya: Capai <strong>100,000 Beans</strong> untuk klaim Extra Bonus New Host <strong>+32,000 Beans</strong> (Tier 50.5%)!`;
     }
     if (safeBeans < 400000) {
-      return `Tier 90% aktif. Bonus maksimal dibatasi hingga <strong>360,000 Beans</strong> (tercapai pada pencapaian 400,000 Beans).`;
+      return `Peluang Emas: Capai <strong>400,000 Beans</strong> untuk mengunci Extra Bonus New Host maksimal sebesar <strong>+120,000 Beans</strong> (Tier 55%)!`;
     }
-    return `Pencapaian luar biasa! Anda telah menyentuh batas atas bonus New Host sebesar <strong>360,000 Beans</strong>.`;
   }
 
-  // Status: Premium Host (Days >= 15 & Hours >= 40)
-  if (safeBeans < 5000) {
-    return `Kumpulkan minimal <strong>5,000 Beans</strong> untuk membuka kelayakan Duration Bonus bulanan (+1,000 Beans)!`;
+
+  // 3. Strategi Duration Bonus (Tabel C: 20h/70j, 25h/90j, 31h/110j)
+  if (safeDays < 20 || safeHours < 70) {
+    const needDays = Math.max(0, 20 - safeDays);
+    const needHours = Math.max(0, Math.round((70 - safeHours) * 10) / 10);
+    return `Tingkatkan durasi siaran: Capai minimal <strong>20 Hari & 70 Jam</strong> (${needDays > 0 ? `+${needDays} hari, ` : ''}+${needHours} jam lagi) untuk membuka Duration Bonus bulanan!`;
   }
 
-  // Milestone Tiers for Premium Host
-  if (safeBeans < 130000) {
-    const nextBeans = 130000 - safeBeans;
-    return `Peluang Naik Level: Tambah <strong>+${nextBeans.toLocaleString('en-US')} Beans</strong> untuk menembus batas Tier Persentase <strong>51%</strong>!`;
+  if (safeDays < 25 || safeHours < 90) {
+    const needDays = Math.max(0, 25 - safeDays);
+    const needHours = Math.max(0, Math.round((90 - safeHours) * 10) / 10);
+    return `Peluang Upgrade Duration Bonus: Capai <strong>25 Hari & 90 Jam</strong> (${needDays > 0 ? `+${needDays} hari, ` : ''}+${needHours} jam lagi) untuk menaikkan bonus durasi!`;
   }
 
-  if (safeBeans >= 130000 && safeBeans < 250000) {
-    return `Target berikutnya: Capai <strong>250,000 Beans</strong> untuk menaikkan bonus host dari 51% menjadi <strong>53%</strong>!`;
-  }
-
-  if (safeBeans >= 250000 && safeBeans < 500000) {
-    return `Target berikutnya: Capai <strong>500,000 Beans</strong> untuk menaikkan bonus host dari 53% menjadi <strong>55%</strong>!`;
-  }
-
-  if (safeBeans >= 500000 && safeBeans < 1200000) {
-    return `Target berikutnya: Capai <strong>1,200,000 Beans</strong> untuk membuka tier bonus super <strong>62%</strong>!`;
-  }
-
-  if (safeDays < fullMonthDays) {
-    return `Syarat dasar terpenuhi (+1,000 Beans). Siaran setiap hari hingga <strong>${fullMonthDays} hari penuh</strong> untuk melipatgandakan Duration Bonus hingga <strong>30,000 Beans</strong>!`;
-  }
-
-  // Days === fullMonthDays
-  if (safeHours < 50) {
-    const needH = Math.round((50 - safeHours) * 10) / 10;
-    return `Hanya butuh <strong>+${needH} jam lagi</strong> untuk membuka Duration Bonus tier 50 Jam (+${safeBeans >= 10000 ? '5,000' : '2,100'} Beans)!`;
-  }
-  if (safeHours < 70) {
-    const needH = Math.round((70 - safeHours) * 10) / 10;
-    return `Hanya butuh <strong>+${needH} jam lagi</strong> untuk membuka tier Duration Bonus 70 Jam!`;
-  }
-  if (safeHours < 90) {
-    const needH = Math.round((90 - safeHours) * 10) / 10;
-    return `Hanya butuh <strong>+${needH} jam lagi</strong> untuk membuka tier Duration Bonus 90 Jam!`;
-  }
-  if (safeHours < 110) {
-    const needH = Math.round((110 - safeHours) * 10) / 10;
-    return `Tinggal <strong>+${needH} jam lagi</strong> untuk mengunci DURATION BONUS MAKSIMAL (30,000 Beans)!`;
+  if (safeDays < fullMonthDays || safeHours < 110) {
+    const needDays = Math.max(0, fullMonthDays - safeDays);
+    const needHours = Math.max(0, Math.round((110 - safeHours) * 10) / 10);
+    return `Tinggal sedikit lagi: Siaran hingga <strong>${fullMonthDays} Hari Penuh & 110 Jam</strong> (${needDays > 0 ? `+${needDays} hari, ` : ''}+${needHours} jam lagi) untuk mengunci DURATION BONUS MAKSIMAL!`;
   }
 
   return `Pencapaian luar biasa! Anda telah mengunci tier Duration Bonus tertinggi (${fullMonthDays} Hari Penuh & ≥110 Jam Siaran)!`;
 }
+

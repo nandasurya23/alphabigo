@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { formatComma, sanitizeDigitsOnly } from '@/engine/formatters';
 import { MAX_SAFE_BEANS, safeClampNumber } from '@/utils/security';
 
@@ -15,6 +15,20 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingCursorPosRef = useRef<number | null>(null);
+  const [inputValue, setInputValue] = useState<string>(beans === 0 ? '' : formatComma(beans));
+
+  useEffect(() => {
+    if (beans === 0) {
+      if (inputValue !== '0') {
+        setInputValue('');
+      }
+    } else {
+      const formatted = formatComma(beans);
+      if (inputValue !== formatted) {
+        setInputValue(formatted);
+      }
+    }
+  }, [beans]);
 
   // Synchronously restore caret position after React reconciles DOM, preventing race conditions
   useLayoutEffect(() => {
@@ -25,32 +39,13 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
       );
       pendingCursorPosRef.current = null;
     }
-  }, [beans]);
+  }, [inputValue]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       inputRef.current?.blur();
       onCalculate();
-      return;
-    }
-
-    const allowedSpecialKeys = [
-      'Backspace',
-      'Delete',
-      'ArrowLeft',
-      'ArrowRight',
-      'Tab',
-      'Home',
-      'End',
-    ];
-
-    if (allowedSpecialKeys.includes(e.key)) return;
-    if (e.ctrlKey || e.metaKey) return;
-
-    // Reject non-digits
-    if (!/^[0-9]$/.test(e.key)) {
-      e.preventDefault();
     }
   };
 
@@ -59,7 +54,15 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
     const digitsOnly = sanitizeDigitsOnly(raw);
 
     if (!digitsOnly) {
+      setInputValue('');
       pendingCursorPosRef.current = 0;
+      onBeansChange(0);
+      return;
+    }
+
+    if (digitsOnly === '0') {
+      setInputValue('0');
+      pendingCursorPosRef.current = 1;
       onBeansChange(0);
       return;
     }
@@ -85,25 +88,16 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
     }
 
     pendingCursorPosRef.current = newCursorPos;
+    setInputValue(formatted);
     onBeansChange(numValue);
   };
 
   const handleBlur = () => {
-    if (beans === 0 && inputRef.current) {
-      inputRef.current.value = '0';
+    if (beans === 0) {
+      setInputValue('');
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasteData = e.clipboardData.getData('text');
-    const cleanDigits = sanitizeDigitsOnly(pasteData);
-    if (cleanDigits) {
-      const numValue = safeClampNumber(parseInt(cleanDigits, 10), 0, MAX_SAFE_BEANS);
-      pendingCursorPosRef.current = formatComma(numValue).length;
-      onBeansChange(numValue);
-    }
-  };
 
   return (
     <div className="form-block">
@@ -144,7 +138,7 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
             type="text"
             id="beans-custom-input"
             className="custom-beans-input"
-            value={beans === 0 ? '' : formatComma(beans)}
+            value={inputValue}
             inputMode="numeric"
             autoComplete="off"
             autoCorrect="off"
@@ -157,12 +151,40 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
             onKeyDown={handleKeyDown}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            onPaste={handlePaste}
           />
+
           <span className="currency-tag">Beans</span>
         </div>
+
+        {/* Quick Beans Target Chips (Milestone Populer BIGO) */}
+        <div className="quick-beans-container" aria-label="Pilihan Cepat Target Beans">
+          {[
+            { label: '10K', value: 10_000 },
+            { label: '50K', value: 50_000 },
+            { label: '130K', value: 130_000 },
+            { label: '300K', value: 300_000 },
+            { label: '1M', value: 1_000_000 },
+          ].map((chip) => {
+            const isActive = beans === chip.value;
+            return (
+              <button
+                key={chip.label}
+                type="button"
+                className={`quick-beans-chip ${isActive ? 'active' : ''}`}
+                onClick={() => {
+                  setInputValue(formatComma(chip.value));
+                  onBeansChange(chip.value);
+                }}
+                title={`Pilih target cepat ${chip.label} (${formatComma(chip.value)} Beans)`}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+
         <p className="field-hint">
-          Ketik angka target Beans kamu (Contoh: 130,000). Pemisah koma terformat otomatis.
+          Ketik angka target Beans kamu atau pilih tombol cepat di atas. Pemisah koma terformat otomatis.
         </p>
       </div>
     </div>

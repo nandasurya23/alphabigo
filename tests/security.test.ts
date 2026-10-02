@@ -5,6 +5,8 @@ import {
   safeClampNumber,
   safeTruncateInput,
   MAX_SAFE_BEANS,
+  deepFreeze,
+  generateIntegrityStamp,
 } from '@/utils/security';
 
 describe('Frontend Security - XSS Defense (DOMPurify)', () => {
@@ -73,3 +75,55 @@ describe('Frontend Security - ReDoS & Payload Flooding Prevention', () => {
     expect(safeTruncateInput(undefined)).toBe('');
   });
 });
+
+describe('Frontend Security - DevTools Runtime Anti-Tamper & Deep Freeze', () => {
+  it('deepFreeze prevents modifying nested properties', () => {
+    const testConfig = {
+      rate: 17800,
+      tiers: [{ min: 100, bonus: 50 }],
+    };
+    const frozen = deepFreeze(testConfig);
+
+    expect(Object.isFrozen(frozen)).toBe(true);
+    expect(Object.isFrozen(frozen.tiers)).toBe(true);
+    expect(Object.isFrozen(frozen.tiers[0])).toBe(true);
+
+    // Attempting to mutate in strict mode throws TypeError
+    expect(() => {
+      (frozen as Record<string, unknown>).rate = 99999;
+    }).toThrow(TypeError);
+
+    expect(() => {
+      (frozen.tiers[0] as Record<string, unknown>).bonus = 99999;
+    }).toThrow(TypeError);
+  });
+
+  it('POLICY_CONSTANTS and tier tables are deeply frozen and immutable', () => {
+    import('@/constants/policy-constants').then(({ POLICY_CONSTANTS, NEW_HOST_TIERS, PREMIUM_PERCENT_TIERS }) => {
+      expect(Object.isFrozen(POLICY_CONSTANTS)).toBe(true);
+      expect(Object.isFrozen(NEW_HOST_TIERS)).toBe(true);
+      expect(Object.isFrozen(PREMIUM_PERCENT_TIERS)).toBe(true);
+
+      expect(() => {
+        (POLICY_CONSTANTS as unknown as Record<string, unknown>).USD_TO_IDR_RATE = 99999;
+      }).toThrow(TypeError);
+    });
+  });
+
+  it('generateIntegrityStamp creates deterministic tamper-evident verification codes', () => {
+    const stamp1 = generateIntegrityStamp('premium', 1000000, 30, 110, 1620000, 137314286);
+    const stamp2 = generateIntegrityStamp('premium', 1000000, 30, 110, 1620000, 137314286);
+
+    // Deterministic: same inputs produce exact same stamp
+    expect(stamp1).toBe(stamp2);
+    expect(stamp1).toMatch(/^ALPHA-[0-9A-F]{4}-[0-9A-F]{4}$/);
+
+    // Any tampering with numbers creates a completely different stamp
+    const tamperedStamp = generateIntegrityStamp('premium', 1000000, 30, 110, 9999999, 500000000);
+    expect(tamperedStamp).not.toBe(stamp1);
+
+    // Zero/uncalculated input returns empty string
+    expect(generateIntegrityStamp('', 0, 0, 0, 0, 0)).toBe('');
+  });
+});
+

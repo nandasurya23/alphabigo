@@ -114,11 +114,12 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
           >
             <div className="option-header-row">
               <span className="option-title">New Host (Bulan 1-3)</span>
-              <span className="option-tag">Persentase (Cap 360K)</span>
+              <span className="option-tag">Bebas Durasi + Extra Bonus</span>
             </div>
             <div className="option-desc">
-              Tier 50%, 85%, hingga 90% dikalikan total Beans. Duration Bonus ditiadakan.
+              Komisi 45%–76% bebas syarat durasi + Extra Bonus New Host + Bonus Durasi Tier 1.
             </div>
+
           </div>
 
           <div
@@ -131,14 +132,15 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
           >
             <div className="option-header-row">
               <span className="option-title">Premium Host (Bulan 4 sampai seterusnya)</span>
-              <span className="option-tag gold">Flat &amp; Progresif</span>
+              <span className="option-tag gold">Wajib 15 Hari &amp; 40 Jam</span>
             </div>
             <div className="option-desc">
-              Flat bonus (2K–100K Beans) &amp; persentase (mulai 130K Beans) + Duration Bonus.
+              Persentase sama (45%–76%) dengan syarat 15 hari &amp; 40 jam + Duration Bonus berjenjang hingga 30.000 Beans.
             </div>
           </div>
         </div>
       </div>
+
       <p className="field-hint" style={{ marginTop: '8px' }}>
         Pilih kategori host kamu di BIGO LIVE (New Host: Bulan 1–3, atau Premium: Bulan 4+).
       </p>

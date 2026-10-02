@@ -8,6 +8,7 @@ interface ResultPanelProps {
   status: HostStatus;
   result: CalculationResult;
   isCalculated: boolean;
+  calcTrigger?: number;
   advisorText: string;
 }
 
@@ -15,25 +16,54 @@ export const ResultPanel: React.FC<ResultPanelProps> = React.memo(({
   status,
   result,
   isCalculated,
+  calcTrigger,
   advisorText,
 }) => {
   const resultsCardRef = useRef<HTMLDivElement>(null);
 
-  // Directly trigger pulse-glow micro-animation without extra React state renders or timer race conditions
+  // Directly trigger pulse-glow micro-animation whenever calculated or when CALCULATE NOW is clicked
   useEffect(() => {
-    if (isCalculated && resultsCardRef.current) {
-      resultsCardRef.current.classList.remove('pulse-glow');
-      void resultsCardRef.current.offsetWidth; // Trigger reflow
-      resultsCardRef.current.classList.add('pulse-glow');
+    if (resultsCardRef.current) {
+      if (isCalculated) {
+        resultsCardRef.current.classList.remove('pulse-glow');
+        void resultsCardRef.current.offsetWidth; // Trigger reflow to restart CSS animation
+        resultsCardRef.current.classList.add('pulse-glow');
 
-      // Smooth scroll on mobile/tablet viewports
-      if (window.innerWidth <= 992) {
-        resultsCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Smooth scroll on mobile/tablet viewports
+        if (window.innerWidth <= 992) {
+          resultsCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        resultsCardRef.current.classList.remove('pulse-glow');
       }
-    } else if (!isCalculated && resultsCardRef.current) {
-      resultsCardRef.current.classList.remove('pulse-glow');
     }
-  }, [isCalculated, result]);
+  }, [isCalculated, result, calcTrigger]);
+
+  // Jika tombol CALCULATE NOW ditekan tapi input belum lengkap, pandu fokus pengguna secara bertahap (Guided Stepper)
+  useEffect(() => {
+    if (calcTrigger && calcTrigger > 0) {
+      if (!status) {
+        // Langkah 1: Kategori Host belum dipilih
+        const dropdown = document.getElementById('custom-status-dropdown');
+        if (dropdown) {
+          dropdown.classList.remove('input-shake');
+          void dropdown.offsetWidth;
+          dropdown.classList.add('input-shake');
+          dropdown.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else if (result.baseBeans <= 0) {
+        // Langkah 2: Target Beans belum diisi
+        const beansInput = document.getElementById('beans-custom-input');
+        if (beansInput) {
+          beansInput.classList.remove('input-shake');
+          void beansInput.offsetWidth;
+          beansInput.classList.add('input-shake');
+          beansInput.focus();
+          beansInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+  }, [calcTrigger, status, result.baseBeans]);
 
   return (
     <div className="cockpit-column column-results">
@@ -42,6 +72,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = React.memo(({
         className="studio-card results-card"
         id="results-card"
       >
+
         {/* Card 2 Header: 3D Gold Cube 2 + ESTIMASI PENGHASILAN + HASIL ESTIMASI Badge */}
         <div className="card-top-bar">
           <div className="card-heading-group">
@@ -54,7 +85,10 @@ export const ResultPanel: React.FC<ResultPanelProps> = React.memo(({
         </div>
 
         {/* Hero Payout Display: TOTAL ESTIMASI PENGHASILAN */}
-        <HeroIncomeBox result={result} isCalculated={isCalculated} />
+        <HeroIncomeBox
+          result={result}
+          isCalculated={isCalculated}
+        />
 
         {/* Financial Ledger Breakdown with 3D Circular Icons */}
         <BreakdownLedger

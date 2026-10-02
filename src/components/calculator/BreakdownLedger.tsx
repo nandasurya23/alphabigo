@@ -27,8 +27,14 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
   const bonusUsd = isCalculated ? hostBonus / rateBeansToUsd : 0;
   const bonusIdr = isCalculated ? Math.round(bonusUsd * rateUsdToIdr) : 0;
 
-  // Row 3: Duration Bonus (Premium only)
-  const durationBonus = isCalculated && status === 'premium' ? result.durationBonus : 0;
+  // Row 3: Extra Bonus New Host (Khusus New Host)
+  const extraBonus = isCalculated && status === 'new' ? result.newHostExtraBonus : 0;
+  const extraUsd = isCalculated ? extraBonus / rateBeansToUsd : 0;
+  const extraIdr = isCalculated ? Math.round(extraUsd * rateUsdToIdr) : 0;
+
+
+  // Row 4: Duration Bonus (Sekarang berlaku untuk New Host & Old Host)
+  const durationBonus = isCalculated ? result.durationBonus : 0;
   const durUsd = isCalculated ? durationBonus / rateBeansToUsd : 0;
   const durIdr = isCalculated ? Math.round(durUsd * rateUsdToIdr) : 0;
 
@@ -121,11 +127,11 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
           </div>
         </div>
 
-        {/* Row 3: Bonus Duration (Only for Premium Host) */}
-        {status === 'premium' && (
-          <div className="breakdown-item-card" id="duration-bonus-row">
+        {/* Row 3: Extra Bonus New Host (Khusus New Host) */}
+        {status === 'new' && (
+          <div className="breakdown-item-card" id="extra-bonus-new-host-row">
             <div className="item-left-group">
-              <div className="item-circle-icon duration-icon" aria-hidden="true">
+              <div className="item-circle-icon extra-icon" aria-hidden="true">
                 <svg
                   width="20"
                   height="20"
@@ -136,34 +142,76 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
               </div>
               <div className="item-text-group">
-                <div className="item-title">BONUS DURATION</div>
+                <div className="item-title">
+                  EXTRA BONUS NEW HOST (BIGO)
+                </div>
                 <div className="item-beans-sub">
-                  <span id="breakdown-duration-beans">
-                    {isCalculated ? `+${formatComma(durationBonus)} Beans` : '+0 Beans'}
+                  <span id="breakdown-extra-bonus-beans">
+                    {isCalculated ? `+${formatComma(extraBonus)} Beans` : '+0 Beans'}
                   </span>
-                  <span className="tier-inline-tag" id="breakdown-duration-rule">
-                    {isCalculated ? `(${result.durationBonusRule})` : '(-)'}
+                  <span className="tier-inline-tag" id="breakdown-extra-bonus-rule">
+                    {isCalculated ? `(${result.newHostExtraBonusRule})` : '(-)'}
                   </span>
                 </div>
               </div>
             </div>
             <div className="item-right-group">
-              <div className="item-idr-val" id="row-duration-idr">
-                Rp {formatCurrencyIDR(durIdr)}
+              <div className="item-idr-val" id="row-extra-bonus-idr">
+                Rp {formatCurrencyIDR(extraIdr)}
               </div>
-              <div className="item-usd-val" id="row-duration-usd">
-                $ {formatCurrencyUSD(durUsd)}
+              <div className="item-usd-val" id="row-extra-bonus-usd">
+                $ {formatCurrencyUSD(extraUsd)}
               </div>
             </div>
           </div>
         )}
 
-        {/* Row 4: Total Summary Bottom Line */}
+
+        {/* Row 4: Bonus Duration (Sekarang untuk New Host & Old Host) */}
+        <div className="breakdown-item-card" id="duration-bonus-row">
+          <div className="item-left-group">
+            <div className="item-circle-icon duration-icon" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div className="item-text-group">
+              <div className="item-title">BONUS DURATION</div>
+              <div className="item-beans-sub">
+                <span id="breakdown-duration-beans">
+                  {isCalculated ? `+${formatComma(durationBonus)} Beans` : '+0 Beans'}
+                </span>
+                <span className="tier-inline-tag" id="breakdown-duration-rule">
+                  {isCalculated ? `(${result.durationBonusRule})` : '(-)'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="item-right-group">
+            <div className="item-idr-val" id="row-duration-idr">
+              Rp {formatCurrencyIDR(durIdr)}
+            </div>
+            <div className="item-usd-val" id="row-duration-usd">
+              $ {formatCurrencyUSD(durUsd)}
+            </div>
+          </div>
+        </div>
+
+        {/* Row 5: Total Summary Bottom Line */}
         <div className="breakdown-item-card total-summary-card">
           <div className="item-left-group">
             <div className="item-circle-icon total-icon" aria-hidden="true">
@@ -189,8 +237,8 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
               </div>
               <div className="total-subtext-note" id="ledger-beans-subtext">
                 {status === 'new'
-                  ? 'Akumulasi Pencapaian + Bonus Host'
-                  : 'Akumulasi Pencapaian + Bonus Host + Bonus Duration'}
+                  ? 'Akumulasi Pencapaian + Bonus Host + Extra Bonus + Duration Bonus'
+                  : 'Akumulasi Pencapaian + Bonus Host + Duration Bonus'}
               </div>
             </div>
           </div>
@@ -210,3 +258,4 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
 });
 
 BreakdownLedger.displayName = 'BreakdownLedger';
+

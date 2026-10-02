@@ -1,351 +1,339 @@
 import { describe, it, expect } from 'vitest';
 import {
   calculateHostBonus,
+  calculateNewHostExtraBonus,
   calculateDurationBonus,
   calculateEstimatedIncome,
 } from '@/engine/calculation-engine';
 
-describe('BIGO Calculation Engine - Benchmark Utama Owner Brief', () => {
-  it('TC-OWNER-01: Benchmark Resmi Owner (Premium 130K, 15d, 40h)', () => {
-    const res = calculateEstimatedIncome('premium', 130000, 15, 40);
-    expect(res.baseBeans).toBe(130000);
-    expect(res.hostBonus).toBe(66300); // 51%
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(197300);
-    expect(Number(res.usdValue.toFixed(2))).toBe(939.52);
-    expect(res.idrValue).toBe(16723524);
+describe('BIGO Calculation Engine - Skenario Resmi Pemilik (Policy Oktober 2026)', () => {
+  it('KASUS 1 (New Host): 3.000 Beans, durasi bebas', () => {
+    const res = calculateEstimatedIncome('new', 3000, 10, 20);
+    expect(res.baseBeans).toBe(3000);
+    expect(res.hostBonus).toBe(1350); // 45%
+    expect(res.newHostExtraBonus).toBe(0); // < 5K
+    expect(res.durationBonus).toBe(0); // < 20h/70j
+    expect(res.totalBeans).toBe(4350);
+    expect(res.idrValue).toBe(368714);
   });
 
-  it('TC-OWNER-02: New Host 130K (New 130K, 15d, 40h)', () => {
-    const res = calculateEstimatedIncome('new', 130000, 15, 40);
-    expect(res.baseBeans).toBe(130000);
-    expect(res.hostBonus).toBe(117000); // 90%
-    expect(res.durationBonus).toBe(0); // Ditiadakan untuk New Host
-    expect(res.totalBeans).toBe(247000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(1176.19);
-    expect(res.idrValue).toBe(20936190);
-  });
-
-  it('TC-OWNER-03: Premium Host 500K (Premium 500K, 15d, 40h)', () => {
-    const res = calculateEstimatedIncome('premium', 500000, 15, 40);
-    expect(res.baseBeans).toBe(500000);
-    expect(res.hostBonus).toBe(275000); // 55%
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(776000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(3695.24);
-    expect(res.idrValue).toBe(65775238);
-  });
-
-  it('TC-OWNER-04: Jam Siaran Desimal (Premium 130K, 15d, 40.5h)', () => {
-    const res = calculateEstimatedIncome('premium', 130000, 15, 40.5);
-    expect(res.baseBeans).toBe(130000);
-    expect(res.hostBonus).toBe(66300);
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(197300);
-    expect(Number(res.usdValue.toFixed(2))).toBe(939.52);
-    expect(res.idrValue).toBe(16723524);
-  });
-});
-
-describe('BIGO Calculation Engine - New Host Tiers', () => {
-  it('TC-001: New Host di bawah batas minimum (1,500 Beans)', () => {
-    const res = calculateEstimatedIncome('new', 1500, 20, 50);
-    expect(res.hostBonus).toBe(0);
+  it('KASUS 1b (Old Host): 3.000 Beans, 12 Hari & 35 Jam (Gugur)', () => {
+    const res = calculateEstimatedIncome('premium', 3000, 12, 35);
+    expect(res.baseBeans).toBe(3000);
+    expect(res.hostBonus).toBe(0); // Jam < 40 -> diskualifikasi
+    expect(res.newHostExtraBonus).toBe(0);
     expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(1500);
-    expect(Number(res.usdValue.toFixed(2))).toBe(7.14);
-    expect(res.idrValue).toBe(127143);
-  });
-
-  it('TC-002: New Host Tier 1 - 50% (3,000 Beans)', () => {
-    const res = calculateEstimatedIncome('new', 3000, 15, 40);
-    expect(res.hostBonus).toBe(1500);
-    expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(4500);
-    expect(Number(res.usdValue.toFixed(2))).toBe(21.43);
-    expect(res.idrValue).toBe(381429);
-  });
-
-  it('TC-003: New Host Tier 2 - 85% (50,000 Beans)', () => {
-    const res = calculateEstimatedIncome('new', 50000, 25, 60);
-    expect(res.hostBonus).toBe(42500);
-    expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(92500);
-    expect(Number(res.usdValue.toFixed(2))).toBe(440.48);
-    expect(res.idrValue).toBe(7840476);
-  });
-
-  it('TC-004: New Host Tier 3 - 90% (100,000 Beans)', () => {
-    const res = calculateEstimatedIncome('new', 100000, 31, 110);
-    expect(res.hostBonus).toBe(90000);
-    expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(190000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(904.76);
-    expect(res.idrValue).toBe(16104762);
-  });
-
-  it('TC-005: New Host Tepat di Titik Cap (400,000 Beans)', () => {
-    const res = calculateEstimatedIncome('new', 400000, 31, 120);
-    expect(res.hostBonus).toBe(360000);
-    expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(760000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(3619.05);
-    expect(res.idrValue).toBe(64419048);
-  });
-
-  it('TC-006: New Host Melebihi Batas Cap (500,000 Beans -> Capped 360,000)', () => {
-    const res = calculateEstimatedIncome('new', 500000, 31, 130);
-    expect(res.hostBonus).toBe(360000);
-    expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(860000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(4095.24);
-    expect(res.idrValue).toBe(72895238);
-  });
-});
-
-describe('BIGO Calculation Engine - Premium Host Flat Tiers', () => {
-  it('TC-007: Premium Host di bawah batas minimum (1,500 Beans)', () => {
-    const res = calculateEstimatedIncome('premium', 1500, 31, 110);
-    expect(res.hostBonus).toBe(0);
-    expect(res.durationBonus).toBe(0);
-    expect(res.totalBeans).toBe(1500);
-    expect(Number(res.usdValue.toFixed(2))).toBe(7.14);
-    expect(res.idrValue).toBe(127143);
-  });
-
-  it('TC-008: Premium Flat Tier 2K (2,000 Beans, full duration)', () => {
-    const res = calculateEstimatedIncome('premium', 2000, 15, 40);
-    expect(res.hostBonus).toBe(1000);
-    expect(res.durationBonus).toBe(0); // < 5000 beans
     expect(res.totalBeans).toBe(3000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(14.29);
     expect(res.idrValue).toBe(254286);
   });
 
-  it('TC-009: Premium Flat Tier 5K (5,000 Beans, full duration)', () => {
-    const res = calculateEstimatedIncome('premium', 5000, 15, 40);
-    expect(res.hostBonus).toBe(3800);
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(9800);
-    expect(Number(res.usdValue.toFixed(2))).toBe(46.67);
-    expect(res.idrValue).toBe(830667);
+  it('KASUS 2 (New Host): 50.000 Beans, 12 Hari & 35 Jam', () => {
+    const res = calculateEstimatedIncome('new', 50000, 12, 35);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(24000); // 48% (Bebas durasi di Tabel A)
+    expect(res.newHostExtraBonus).toBe(15000); // Tier 50K-69.9K
+    expect(res.durationBonus).toBe(0); // Syarat 20h/70j belum terpenuhi
+    expect(res.totalBeans).toBe(89000);
+    expect(res.idrValue).toBe(7543810);
   });
 
-  it('TC-010: Premium Flat Tier 10K (10,000 Beans, 15d, 40h)', () => {
-    const res = calculateEstimatedIncome('premium', 10000, 15, 40);
-    expect(res.hostBonus).toBe(7500);
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(18500);
-    expect(Number(res.usdValue.toFixed(2))).toBe(88.10);
-    expect(res.idrValue).toBe(1568095);
+  it('KASUS 2b (Old Host): 50.000 Beans, 12 Hari & 35 Jam (Gugur)', () => {
+    const res = calculateEstimatedIncome('premium', 50000, 12, 35);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(0); // Jam < 40 -> diskualifikasi
+    expect(res.newHostExtraBonus).toBe(0);
+    expect(res.durationBonus).toBe(0);
+    expect(res.totalBeans).toBe(50000);
+    expect(res.idrValue).toBe(4238095);
   });
 
-  it('TC-011: Premium Flat Tier 20K (20,000 Beans, 20d, 45h)', () => {
-    const res = calculateEstimatedIncome('premium', 20000, 20, 45);
-    expect(res.hostBonus).toBe(12000);
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(33000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(157.14);
-    expect(res.idrValue).toBe(2797143);
+  it('KASUS 3 (New Host): 50.000 Beans, 15 Hari & 40 Jam', () => {
+    const res = calculateEstimatedIncome('new', 50000, 15, 40);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(24000);
+    expect(res.newHostExtraBonus).toBe(15000);
+    expect(res.durationBonus).toBe(0); // Belum 20 Hari & 70 Jam
+    expect(res.totalBeans).toBe(89000);
+    expect(res.idrValue).toBe(7543810);
   });
 
-  it('TC-012: Premium Flat Tier 30K (30,000 Beans, 25d, 60h)', () => {
-    const res = calculateEstimatedIncome('premium', 30000, 25, 60);
-    expect(res.hostBonus).toBe(17000);
-    expect(res.durationBonus).toBe(1000);
-    expect(res.totalBeans).toBe(48000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(228.57);
-    expect(res.idrValue).toBe(4068571);
+  it('KASUS 3b (Old Host): 50.000 Beans, 15 Hari & 40 Jam', () => {
+    const res = calculateEstimatedIncome('premium', 50000, 15, 40);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(24000); // 48%
+    expect(res.newHostExtraBonus).toBe(0);
+    expect(res.durationBonus).toBe(0); // Belum 20 Hari & 70 Jam
+    expect(res.totalBeans).toBe(74000);
+    expect(res.idrValue).toBe(6272381);
   });
 
-  it('TC-013: Premium Flat Tier 50K (50,000 Beans, 31d, 45h)', () => {
-    const res = calculateEstimatedIncome('premium', 50000, 31, 45);
-    expect(res.hostBonus).toBe(25000);
-    expect(res.durationBonus).toBe(1000); // 31d but hours < 50
-    expect(res.totalBeans).toBe(76000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(361.90);
-    expect(res.idrValue).toBe(6441905);
+  it('KASUS 4 (New Host): 50.000 Beans, 20 Hari & 75 Jam', () => {
+    const res = calculateEstimatedIncome('new', 50000, 20, 75);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(24000);
+    expect(res.newHostExtraBonus).toBe(15000);
+    expect(res.durationBonus).toBe(200); // New Host locked at Tier 1 (20h/70j)
+    expect(res.totalBeans).toBe(89200);
+    expect(res.idrValue).toBe(7560762);
   });
 
-  it('TC-014: Premium Flat Tier 70K (70,000 Beans, 31d, 55h)', () => {
-    const res = calculateEstimatedIncome('premium', 70000, 31, 55);
-    expect(res.hostBonus).toBe(35000);
-    expect(res.durationBonus).toBe(5000); // 31d & >=50h
-    expect(res.totalBeans).toBe(110000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(523.81);
-    expect(res.idrValue).toBe(9323810);
+  it('KASUS 4b (Old Host): 50.000 Beans, 20 Hari & 75 Jam', () => {
+    const res = calculateEstimatedIncome('premium', 50000, 20, 75);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(24000);
+    expect(res.newHostExtraBonus).toBe(0);
+    expect(res.durationBonus).toBe(2300); // Old Host Tier 30K-69.9K (20h/70j)
+    expect(res.totalBeans).toBe(76300);
+    expect(res.idrValue).toBe(6467333);
   });
 
-  it('TC-015: Premium Flat Tier 100K (100,000 Beans, 31d, 75h)', () => {
-    const res = calculateEstimatedIncome('premium', 100000, 31, 75);
-    expect(res.hostBonus).toBe(50000);
-    expect(res.durationBonus).toBe(10000); // 31d & >=70h
-    expect(res.totalBeans).toBe(160000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(761.90);
-    expect(res.idrValue).toBe(13561905);
+
+  it('KASUS 5 (New Host): 200.000 Beans, 31 Hari & 115 Jam', () => {
+    const res = calculateEstimatedIncome('new', 200000, 31, 115, 31);
+    expect(res.baseBeans).toBe(200000);
+    expect(res.hostBonus).toBe(104000); // 52%
+    expect(res.newHostExtraBonus).toBe(65000); // Tier 200K-299.9K
+    expect(res.durationBonus).toBe(800); // New Host Tier 1 Column 3
+    expect(res.totalBeans).toBe(369800);
+    expect(res.idrValue).toBe(31344952);
   });
 
-  it('TC-016: Premium Interval di antara Flat (15,000 Beans, 31d, 95h)', () => {
-    const res = calculateEstimatedIncome('premium', 15000, 31, 95);
-    expect(res.hostBonus).toBe(7500); // Tier 10K
-    expect(res.durationBonus).toBe(7500); // 31d & >=90h & 10K-29.9K tier
-    expect(res.totalBeans).toBe(30000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(142.86);
-    expect(res.idrValue).toBe(2542857);
-  });
-});
-
-describe('BIGO Calculation Engine - Premium Host Percentage Tiers', () => {
-  it('TC-017: Premium 130K Tier 51% (31d, 110h)', () => {
-    const res = calculateEstimatedIncome('premium', 130000, 31, 110);
-    expect(res.hostBonus).toBe(66300);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(226300);
-    expect(Number(res.usdValue.toFixed(2))).toBe(1077.62);
-    expect(res.idrValue).toBe(19181619);
-  });
-
-  it('TC-018: Premium 250K Tier 53% (31d, 110h)', () => {
-    const res = calculateEstimatedIncome('premium', 250000, 31, 110);
-    expect(res.hostBonus).toBe(132500);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(412500);
-    expect(Number(res.usdValue.toFixed(2))).toBe(1964.29);
-    expect(res.idrValue).toBe(34964286);
-  });
-
-  it('TC-019: Premium 400K Tier 55% (31d, 95h)', () => {
-    const res = calculateEstimatedIncome('premium', 400000, 31, 95);
-    expect(res.hostBonus).toBe(220000);
-    expect(res.durationBonus).toBe(25000);
-    expect(res.totalBeans).toBe(645000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(3071.43);
-    expect(res.idrValue).toBe(54671429);
-  });
-
-  it('TC-020: Premium 600K Tier 57% (31d, 75h)', () => {
-    const res = calculateEstimatedIncome('premium', 600000, 31, 75);
-    expect(res.hostBonus).toBe(342000);
-    expect(res.durationBonus).toBe(20000);
-    expect(res.totalBeans).toBe(962000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(4580.95);
-    expect(res.idrValue).toBe(81540952);
-  });
-
-  it('TC-021: Premium 800K Tier 59% (31d, 115h)', () => {
-    const res = calculateEstimatedIncome('premium', 800000, 31, 115);
-    expect(res.hostBonus).toBe(472000);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(1302000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(6200.00);
-    expect(res.idrValue).toBe(110360000);
-  });
-
-  it('TC-022: Premium 1.2M Tier 62% (31d, 110h)', () => {
-    const res = calculateEstimatedIncome('premium', 1200000, 31, 110);
-    expect(res.hostBonus).toBe(744000);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(1974000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(9400.00);
-    expect(res.idrValue).toBe(167320000);
-  });
-
-  it('TC-023: Premium 2.3M Tier 68% (31d, 120h)', () => {
-    const res = calculateEstimatedIncome('premium', 2300000, 31, 120);
-    expect(res.hostBonus).toBe(1564000);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(3894000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(18542.86);
-    expect(res.idrValue).toBe(330062857);
-  });
-
-  it('TC-024: Premium 3.5M Tier 72% (31d, 125h)', () => {
-    const res = calculateEstimatedIncome('premium', 3500000, 31, 125);
-    expect(res.hostBonus).toBe(2520000);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(6050000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(28809.52);
-    expect(res.idrValue).toBe(512809524);
-  });
-
-  it('TC-025: Premium Top Tier 5M Tier 75% (31d, 130h)', () => {
-    const res = calculateEstimatedIncome('premium', 5000000, 31, 130);
-    expect(res.hostBonus).toBe(3750000);
-    expect(res.durationBonus).toBe(30000);
-    expect(res.totalBeans).toBe(8780000);
-    expect(Number(res.usdValue.toFixed(2))).toBe(41809.52);
-    expect(res.idrValue).toBe(744209524);
+  it('KASUS 5b (Old Host): 200.000 Beans, 31 Hari & 115 Jam', () => {
+    const res = calculateEstimatedIncome('premium', 200000, 31, 115, 31);
+    expect(res.baseBeans).toBe(200000);
+    expect(res.hostBonus).toBe(104000); // 52%
+    expect(res.newHostExtraBonus).toBe(0);
+    expect(res.durationBonus).toBe(30000); // Old Host Tier >=200K Column 3
+    expect(res.totalBeans).toBe(334000);
+    expect(res.idrValue).toBe(28310476);
   });
 });
 
-describe('BIGO Calculation Engine - Boundaries & Prorata', () => {
-  it('TC-BND-01: Input Hari Negatif clamped ke 0', () => {
-    const res = calculateEstimatedIncome('premium', 130000, -5, 40);
-    expect(res.hostBonus).toBe(0); // Disqualified karena hari < 10
+describe('BIGO Calculation Engine - Tabel A Persentase Seragam (45% s/d 76%)', () => {
+  it('TC-T1: 2.000 Beans (45%)', () => {
+    const res = calculateHostBonus('premium', 2000, 15, 40);
+    expect(res.bonus).toBe(900);
   });
 
-  it('TC-BND-02: Input Hari Melebihi 31 di-clamp ke 31', () => {
-    const res = calculateEstimatedIncome('premium', 130000, 35, 110);
-    expect(res.durationBonus).toBe(30000); // Clamped ke 31 hari & 110 jam
+  it('TC-T2: 10.000 Beans (46.5%)', () => {
+    const res = calculateHostBonus('premium', 10000, 15, 40);
+    expect(res.bonus).toBe(4650);
   });
 
-  it('TC-BND-03: Input Jam Melebihi 155 di-clamp ke 155', () => {
-    const res = calculateEstimatedIncome('premium', 130000, 31, 180);
-    expect(res.durationBonus).toBe(30000);
+  it('TC-T3: 70.000 Beans (50%)', () => {
+    const res = calculateHostBonus('premium', 70000, 15, 40);
+    expect(res.bonus).toBe(35000);
   });
 
-  it('TC-BND-04: Input Beans 0', () => {
-    const res = calculateEstimatedIncome('premium', 0, 15, 40);
-    expect(res.totalBeans).toBe(0);
-    expect(res.idrValue).toBe(0);
-    expect(res.usdValue).toBe(0);
+  it('TC-T4: 100.000 Beans (50.5%)', () => {
+    const res = calculateHostBonus('premium', 100000, 15, 40);
+    expect(res.bonus).toBe(50500);
   });
 
-  it('Evaluasi Prorata (12 Hari, 40 Jam, 130K Beans)', () => {
-    // 12/15 * 66300 = 53040
-    const res = calculateHostBonus('premium', 130000, 12, 40);
-    expect(res.isProrata).toBe(true);
-    expect(res.bonus).toBe(53040);
+  it('TC-T5: 300.000 Beans (54%)', () => {
+    const res = calculateHostBonus('premium', 300000, 15, 40);
+    expect(res.bonus).toBe(162000);
   });
 
-  it('calculateDurationBonus returns 0 for New Host', () => {
-    const res = calculateDurationBonus('new', 130000, 31, 110);
+  it('TC-T6: 400.000 Beans (55%)', () => {
+    const res = calculateHostBonus('premium', 400000, 15, 40);
+    expect(res.bonus).toBe(220000);
+  });
+
+  it('TC-T7: 600.000 Beans (57%)', () => {
+    const res = calculateHostBonus('premium', 600000, 15, 40);
+    expect(res.bonus).toBe(342000);
+  });
+
+  it('TC-T8: 850.000 Beans (59%)', () => {
+    const res = calculateHostBonus('premium', 850000, 15, 40);
+    expect(res.bonus).toBe(501500);
+  });
+
+  it('TC-T9: 1.000.000 Beans (61%)', () => {
+    const res = calculateHostBonus('premium', 1000000, 15, 40);
+    expect(res.bonus).toBe(610000);
+  });
+
+  it('TC-T10: 1.200.000 Beans (62%)', () => {
+    const res = calculateHostBonus('premium', 1200000, 15, 40);
+    expect(res.bonus).toBe(744000);
+  });
+
+  it('TC-T11: 2.300.000 Beans (68%)', () => {
+    const res = calculateHostBonus('premium', 2300000, 15, 40);
+    expect(res.bonus).toBe(1564000);
+  });
+
+  it('TC-T12: 3.500.000 Beans (72%)', () => {
+    const res = calculateHostBonus('premium', 3500000, 15, 40);
+    expect(res.bonus).toBe(2520000);
+  });
+
+  it('TC-T13: 5.000.000 Beans (75%)', () => {
+    const res = calculateHostBonus('premium', 5000000, 15, 40);
+    expect(res.bonus).toBe(3750000);
+  });
+
+  it('TC-T14: 9.000.000 Beans (76%)', () => {
+    const res = calculateHostBonus('premium', 9000000, 15, 40);
+    expect(res.bonus).toBe(6840000);
+  });
+});
+
+describe('BIGO Calculation Engine - Extra Bonus New Host', () => {
+  it('Target < 5K tidak mendapatkan Extra Bonus New Host', () => {
+    const res = calculateNewHostExtraBonus('new', 4500);
     expect(res.bonus).toBe(0);
     expect(res.qualified).toBe(false);
   });
 
-  it('calculateDurationBonus checks minimum requirements for Premium', () => {
-    const res = calculateDurationBonus('premium', 4000, 15, 40);
-    expect(res.bonus).toBe(0); // < 5000 beans
+  it('Tier 5K-9.9K: +1.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 5000);
+    expect(res.bonus).toBe(1000);
+    expect(res.qualified).toBe(true);
+  });
+
+  it('Tier 10K-19.9K: +2.500 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 15000);
+    expect(res.bonus).toBe(2500);
+  });
+
+  it('Tier 20K-29.9K: +5.200 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 25000);
+    expect(res.bonus).toBe(5200);
+  });
+
+  it('Tier 30K-49.9K: +8.500 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 35000);
+    expect(res.bonus).toBe(8500);
+  });
+
+  it('Tier 50K-69.9K: +15.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 60000);
+    expect(res.bonus).toBe(15000);
+  });
+
+  it('Tier 70K-99.9K: +20.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 80000);
+    expect(res.bonus).toBe(20000);
+  });
+
+  it('Tier 100K-199.9K: +32.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 150000);
+    expect(res.bonus).toBe(32000);
+  });
+
+  it('Tier 200K-299.9K: +65.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 250000);
+    expect(res.bonus).toBe(65000);
+  });
+
+  it('Tier 300K-399.9K: +95.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 350000);
+    expect(res.bonus).toBe(95000);
+  });
+
+  it('Tier 400K-599.9K: +120.000 Beans', () => {
+    const res = calculateNewHostExtraBonus('new', 500000);
+    expect(res.bonus).toBe(120000);
+  });
+
+  it('Target >= 600K tidak ada Extra Bonus New Host', () => {
+    const res = calculateNewHostExtraBonus('new', 600000);
+    expect(res.bonus).toBe(0);
     expect(res.qualified).toBe(false);
   });
 
-  describe('Dynamic Month Days Duration Bonus (Full Day Live Tanpa Libur)', () => {
-    it('Bulan 30 Hari (Contoh: April): 30 hari & 110 jam berhak bonus 30,000 Beans', () => {
-      const res = calculateDurationBonus('premium', 130000, 30, 110, 30);
-      expect(res.bonus).toBe(30000);
-      expect(res.ruleText).toBe('30 Hari & ≥110 Jam (Tier ≥130K)');
-      expect(res.qualified).toBe(true);
-    });
+  it('Old Host selalu 0 Extra Bonus New Host', () => {
+    const res = calculateNewHostExtraBonus('premium', 50000);
+    expect(res.bonus).toBe(0);
+    expect(res.qualified).toBe(false);
+  });
+});
 
-    it('Bulan 29 Hari (Contoh: Februari Kabisat): 29 hari & 110 jam berhak bonus 30,000 Beans', () => {
-      const res = calculateDurationBonus('premium', 130000, 29, 110, 29);
-      expect(res.bonus).toBe(30000);
-      expect(res.ruleText).toBe('29 Hari & ≥110 Jam (Tier ≥130K)');
-      expect(res.qualified).toBe(true);
-    });
 
-    it('Bulan 28 Hari (Contoh: Februari Standard): 28 hari & 90 jam berhak bonus 25,000 Beans', () => {
-      const res = calculateDurationBonus('premium', 130000, 28, 90, 28);
-      expect(res.bonus).toBe(25000);
-      expect(res.ruleText).toBe('28 Hari & ≥90 Jam (Tier ≥130K)');
-      expect(res.qualified).toBe(true);
-    });
+describe('BIGO Calculation Engine - Duration Bonus Matriks', () => {
+  it('Durasi kurang dari 20 hari atau 70 jam -> 0 Beans', () => {
+    const res1 = calculateDurationBonus('premium', 100000, 19, 110);
+    expect(res1.bonus).toBe(0);
+    expect(res1.qualified).toBe(false);
 
-    it('Bulan 31 Hari: 30 hari siaran belum mencapai Full Day Live 31 hari', () => {
-      const res = calculateDurationBonus('premium', 130000, 30, 110, 31);
-      expect(res.bonus).toBe(1000); // Hanya memenuhi syarat dasar >=15d & >=40h
-      expect(res.ruleText).toContain('Syarat Dasar Terpenuhi');
-    });
+    const res2 = calculateDurationBonus('premium', 100000, 25, 69.5);
+    expect(res2.bonus).toBe(0);
+    expect(res2.qualified).toBe(false);
+  });
+
+  it('Matriks 25 Hari & 90 Jam (Old Host berbagai tier Beans)', () => {
+    // 5K-9.9K -> 1.700
+    expect(calculateDurationBonus('premium', 8000, 25, 90).bonus).toBe(1700);
+    // 10K-29.9K -> 3.100
+    expect(calculateDurationBonus('premium', 20000, 25, 90).bonus).toBe(3100);
+    // 30K-69.9K -> 3.400
+    expect(calculateDurationBonus('premium', 50000, 25, 90).bonus).toBe(3400);
+    // 70K-199.9K -> 3.800
+    expect(calculateDurationBonus('premium', 100000, 25, 90).bonus).toBe(3800);
+    // >=200K -> 4.500
+    expect(calculateDurationBonus('premium', 300000, 25, 90).bonus).toBe(4500);
+  });
+
+  it('Matriks Full Live & 110 Jam (Old Host berbagai tier Beans)', () => {
+    expect(calculateDurationBonus('premium', 8000, 31, 110, 31).bonus).toBe(2100);
+    expect(calculateDurationBonus('premium', 20000, 31, 110, 31).bonus).toBe(7500);
+    expect(calculateDurationBonus('premium', 50000, 31, 110, 31).bonus).toBe(15000);
+    expect(calculateDurationBonus('premium', 100000, 31, 110, 31).bonus).toBe(20000);
+    expect(calculateDurationBonus('premium', 300000, 31, 110, 31).bonus).toBe(30000);
+  });
+
+  it('New Host selalu terkunci pada Tier 1 di semua tingkat Beans', () => {
+    // 20h & 70j -> 200
+    expect(calculateDurationBonus('new', 3000, 20, 70).bonus).toBe(200);
+    expect(calculateDurationBonus('new', 500000, 20, 70).bonus).toBe(200);
+
+    // 25h & 90j -> 500
+    expect(calculateDurationBonus('new', 3000, 25, 90).bonus).toBe(500);
+    expect(calculateDurationBonus('new', 500000, 25, 90).bonus).toBe(500);
+
+    // 31h & 110j -> 800
+    expect(calculateDurationBonus('new', 3000, 31, 110, 31).bonus).toBe(800);
+    expect(calculateDurationBonus('new', 500000, 31, 110, 31).bonus).toBe(800);
+  });
+
+  it('Bulan 30 Hari (Contoh: April): 30 hari & 110 jam memenuhi kolom Full Live', () => {
+    const res = calculateDurationBonus('premium', 200000, 30, 110, 30);
+    expect(res.bonus).toBe(30000);
+    expect(res.qualified).toBe(true);
+  });
+
+  it('Bulan 29 Hari (Contoh: Februari Kabisat): 29 hari & 110 jam memenuhi kolom Full Live', () => {
+    const res = calculateDurationBonus('premium', 200000, 29, 110, 29);
+    expect(res.bonus).toBe(30000);
+    expect(res.qualified).toBe(true);
+  });
+});
+
+describe('BIGO Calculation Engine - Boundaries & Prorata', () => {
+  it('Evaluasi Prorata Old Host: 130.000 Beans, 12 Hari, 40 Jam', () => {
+    // 130.000 * 50.5% = 65.650 -> (12 / 15) * 65.650 = 52.520 Beans
+    const res = calculateHostBonus('premium', 130000, 12, 40);
+    expect(res.isProrata).toBe(true);
+    expect(res.bonus).toBe(52520);
+  });
+
+  it('Input Hari Negatif di-clamp ke 0 (Disqualified)', () => {
+    const res = calculateEstimatedIncome('premium', 130000, -5, 40);
+    expect(res.hostBonus).toBe(0);
+  });
+
+  it('Input Jam Melebihi 155 di-clamp ke 155', () => {
+    const res = calculateEstimatedIncome('premium', 200000, 31, 180, 31);
+    expect(res.durationBonus).toBe(30000);
+  });
+
+  it('Input Beans 0', () => {
+    const res = calculateEstimatedIncome('premium', 0, 15, 40);
+    expect(res.totalBeans).toBe(0);
+    expect(res.idrValue).toBe(0);
+    expect(res.usdValue).toBe(0);
   });
 });

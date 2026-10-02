@@ -1,6 +1,6 @@
 /**
  * ALPHA × BIGO HOST INCOME CALCULATOR - PURE CALCULATION ENGINE
- * Functional Core: Deterministic mathematical computations matching Official Policy Q2-April 2026
+ * Functional Core: Deterministic mathematical computations matching Official Policy October 2026
  */
 
 import {
@@ -11,14 +11,23 @@ import {
 } from '@/types/calculator';
 import {
   POLICY_CONSTANTS,
-  NEW_HOST_TIERS,
-  PREMIUM_FLAT_TIERS,
-  PREMIUM_PERCENT_TIERS,
+  OFFICIAL_HOST_TIERS,
+  NEW_HOST_EXTRA_BONUS_TIERS,
+  DURATION_BONUS_TIERS,
 } from '@/constants/policy-constants';
-import { formatComma } from '@/engine/formatters';
+import { formatComma, formatCurrencyIDR } from '@/engine/formatters';
+
+export interface NewHostExtraBonusResult {
+  readonly bonus: number;
+  readonly ruleText: string;
+  readonly qualified: boolean;
+}
 
 /**
- * Menghitung Bonus Host Beans berdasarkan status, pencapaian beans, dan durasi siaran
+ * Menghitung Bonus Host Beans (Tabel A) berdasarkan status, pencapaian beans, dan durasi siaran.
+ * - Persentase SAMA untuk New Host dan Old Host (45% s/d 76%).
+ * - New Host bebas target hari/jam siaran untuk Tabel A (cair 100%).
+ * - Old Host wajib min. 15 hari & 40 jam siaran (dengan skema prorata 10–14 hari).
  */
 export function calculateHostBonus(
   status: HostStatus,
@@ -30,73 +39,48 @@ export function calculateHostBonus(
   const safeDays = Math.max(0, Math.min(POLICY_CONSTANTS.DAYS_MAX, Number(days) || 0));
   const safeHours = Math.max(0, Math.min(POLICY_CONSTANTS.HOURS_MAX, Number(hours) || 0));
 
-  // A.1 New Host (Bulan 1–3)
-  if (status === 'new') {
-    const matchedTier =
-      NEW_HOST_TIERS.find((t) => safeBeans >= t.minBeans) ||
-      NEW_HOST_TIERS[NEW_HOST_TIERS.length - 1];
-    const rawBonus = Math.round(safeBeans * matchedTier.rate);
-    const isCapped = rawBonus > POLICY_CONSTANTS.NEW_HOST_BONUS_CAP;
-    const finalBonus = isCapped ? POLICY_CONSTANTS.NEW_HOST_BONUS_CAP : rawBonus;
-
-    const ruleText = isCapped
-      ? `${matchedTier.label} (Capped maks 360,000)`
-      : `${matchedTier.label} × ${formatComma(safeBeans)} Beans`;
-
-    return {
-      bonus: finalBonus,
-      ruleText: ruleText,
-      tierName: `New Host: ${matchedTier.label}`,
-      isProrata: false,
-      qualified: true,
-    };
-  }
-
-  // A.2 Premium Host (Bulan ke-4 dst)
   if (safeBeans < 2000) {
     return {
       bonus: 0,
       ruleText: 'Belum mencapai syarat minimum 2,000 Beans',
-      tierName: 'Premium: < 2,000 Beans',
+      tierName: '< 2,000 Beans',
       isProrata: false,
       qualified: false,
     };
   }
 
-  // Evaluasi base target bonus jika mencapai 15 hari & 40 jam
-  let baseBonus = 0;
-  let baseRuleText = '';
-  let tierName = '';
+  // Cari persentase tier dari Tabel A (SAMA untuk New Host & Old Host)
+  const matchedTier =
+    OFFICIAL_HOST_TIERS.find((t) => safeBeans >= t.minBeans) ||
+    OFFICIAL_HOST_TIERS[OFFICIAL_HOST_TIERS.length - 1];
 
-  if (safeBeans >= 130000) {
-    const matchedTier = PREMIUM_PERCENT_TIERS.find((t) => safeBeans >= t.minBeans);
-    if (matchedTier) {
-      baseBonus = Math.round(safeBeans * matchedTier.rate);
-      baseRuleText = `${matchedTier.label} × ${formatComma(safeBeans)} Beans`;
-      tierName = `Premium: ${matchedTier.label}`;
-    }
-  } else {
-    const matchedFlat = PREMIUM_FLAT_TIERS.find((t) => safeBeans >= t.minBeans);
-    if (matchedFlat) {
-      baseBonus = matchedFlat.flatBonus;
-      baseRuleText = matchedFlat.label;
-      tierName = `Premium: ${matchedFlat.label}`;
-    }
-  }
+  const baseBonus = Math.round(safeBeans * matchedTier.rate);
+  const baseRuleText = `${matchedTier.label} × ${formatComma(safeBeans)} Beans`;
+  const tierName = matchedTier.label;
 
-  // Cek Kualifikasi Penuh: Min 15 Hari & Min 40 Jam (A.3.d & A.4.a)
-  if (safeDays >= POLICY_CONSTANTS.MIN_VALID_DAYS && safeHours >= POLICY_CONSTANTS.MIN_VALID_HOURS) {
+  // New Host: Bebas syarat durasi maupun hari siaran di Tabel A (A.1.d & Arahan Owner)
+  if (status === 'new') {
     return {
       bonus: baseBonus,
       ruleText: baseRuleText,
-      tierName: tierName,
+      tierName: `New Host: ${tierName}`,
       isProrata: false,
       qualified: true,
     };
   }
 
-  // Cek Evaluasi Prorata (Bagian E, Hal. 5):
-  // Syarat: min 10 hari siaran valid, 40 jam durasi siaran valid, dan 2.001 Beans
+  // Old Host: Wajib memenuhi 15 Hari & 40 Jam untuk komisi penuh 100%
+  if (safeDays >= POLICY_CONSTANTS.MIN_VALID_DAYS && safeHours >= POLICY_CONSTANTS.MIN_VALID_HOURS) {
+    return {
+      bonus: baseBonus,
+      ruleText: baseRuleText,
+      tierName: `Old Host: ${tierName}`,
+      isProrata: false,
+      qualified: true,
+    };
+  }
+
+  // Old Host: Komisi Prorata (F.b) - Syarat: 10–14 Hari, ≥40 Jam, dan ≥2.001 Beans
   if (
     safeDays >= POLICY_CONSTANTS.PRORATA_MIN_DAYS &&
     safeHours >= POLICY_CONSTANTS.MIN_VALID_HOURS &&
@@ -106,14 +90,24 @@ export function calculateHostBonus(
     return {
       bonus: prorataBonus,
       ruleText: `Komisi Prorata (${safeDays}/15 Hari) × ${formatComma(baseBonus)} Beans`,
-      tierName: `${tierName} (Prorata)`,
+      tierName: `Old Host: ${tierName} (Prorata)`,
       isProrata: true,
       qualified: true,
     };
   }
 
-  // Tidak Memenuhi Syarat Kualifikasi (Hari < 10 atau Jam < 40)
-  let reason = 'Target tidak tercapai';
+  // Old Host: Belum Memenuhi Syarat Kualifikasi (Hari < 10 atau Jam < 40)
+  if (safeHours === 0 && safeDays === 0) {
+    return {
+      bonus: 0,
+      ruleText: 'Menunggu pengisian hari & jam siaran (Syarat: 15 Hari & 40 Jam)',
+      tierName: `Old Host: ${tierName} (Menunggu Durasi)`,
+      isProrata: false,
+      qualified: false,
+    };
+  }
+
+  let reason = 'Target durasi belum tercapai';
   if (safeHours < POLICY_CONSTANTS.MIN_VALID_HOURS) {
     reason = `Durasi siaran kurang dari 40 Jam (${safeHours} Jam)`;
   } else if (safeDays < POLICY_CONSTANTS.PRORATA_MIN_DAYS) {
@@ -122,15 +116,61 @@ export function calculateHostBonus(
 
   return {
     bonus: 0,
-    ruleText: `${reason} (Komisi Hangus)`,
-    tierName: `${tierName} (Diskualifikasi)`,
+    ruleText: `${reason} (Syarat belum terpenuhi)`,
+    tierName: `Old Host: ${tierName} (Belum Memenuhi Syarat)`,
     isProrata: false,
     qualified: false,
   };
 }
 
 /**
- * Menghitung Duration Bonus untuk Premium Host (Tabel C, Hal. 4)
+ * Menghitung Extra Bonus New Host BIGO (Beans)
+ * Khusus New Host (Bulan 1–3)
+ */
+
+export function calculateNewHostExtraBonus(
+  status: HostStatus,
+  beans: number
+): NewHostExtraBonusResult {
+  if (status !== 'new') {
+    return { bonus: 0, ruleText: 'Khusus New Host', qualified: false };
+  }
+
+  const safeBeans = Math.max(0, Number(beans) || 0);
+
+  if (safeBeans < 5000) {
+    return { bonus: 0, ruleText: 'Belum mencapai syarat minimum 5,000 Beans', qualified: false };
+  }
+
+  if (safeBeans >= 600000) {
+    return { bonus: 0, ruleText: 'Target ≥ 600,000 Beans (Tanpa Extra Bonus)', qualified: false };
+  }
+
+  const matched = NEW_HOST_EXTRA_BONUS_TIERS.find(
+    (t) => safeBeans >= t.minBeans && safeBeans <= t.maxBeans
+  );
+
+  if (matched) {
+    return {
+      bonus: matched.bonusBeans,
+      ruleText: `${matched.label} (±Rp ${formatCurrencyIDR(matched.bonusIdrEstimate)})`,
+      qualified: true,
+    };
+  }
+
+  return { bonus: 0, ruleText: '(-)', qualified: false };
+}
+
+/**
+ * Menghitung Duration Bonus (Tabel C, Hal. 4)
+ * Syarat Durasi (Wajib Terpenuhi):
+ * - Target 3: Full Month (30/31 Hari) & ≥110 Jam
+ * - Target 2: ≥25 Hari & ≥90 Jam
+ * - Target 1: ≥20 Hari & ≥70 Jam
+ *
+ * Ketentuan Kategori:
+ * - New Host: Berlaku Tier 1 (2.000–4.999 Beans) fixed (200 / 500 / 800 Beans).
+ * - Old Host: Dimulai dari Tier 2 (≥5.000 Beans), mengikuti matriks Beans.
  */
 export function calculateDurationBonus(
   status: HostStatus,
@@ -139,70 +179,93 @@ export function calculateDurationBonus(
   hours: number,
   daysInMonth: number = 31
 ): DurationBonusResult {
-  if (status === 'new') {
-    return { bonus: 0, ruleText: 'Tidak berlaku untuk New Host', qualified: false };
-  }
-
   const fullMonthDays = daysInMonth || 31;
   const safeBeans = Math.max(0, Number(beans) || 0);
   const safeDays = Math.max(0, Math.min(fullMonthDays, Number(days) || 0));
   const safeHours = Math.max(0, Math.min(POLICY_CONSTANTS.HOURS_MAX, Number(hours) || 0));
 
-  if (safeBeans < 5000 || safeDays < 15 || safeHours < 40) {
-    let reason = 'Belum memenuhi syarat dasar';
-    if (safeBeans < 5000) reason += ' (Min. 5,000 Beans)';
-    else if (safeDays < 15) reason += ' (Min. 15 Hari Siaran)';
-    else if (safeHours < 40) reason += ' (Min. 40 Jam Siaran)';
+  // Evaluasi 3 Kolom Target Durasi (dari yang tertinggi)
+  let targetColumn: 'col3' | 'col2' | 'col1' | null = null;
+  let durText = '';
+
+  if (safeDays >= fullMonthDays && safeHours >= 110) {
+    targetColumn = 'col3';
+    durText = `${fullMonthDays} Hari & ≥110 Jam`;
+  } else if (safeDays >= 25 && safeHours >= 90) {
+    targetColumn = 'col2';
+    durText = '25 Hari & ≥90 Jam';
+  } else if (safeDays >= 20 && safeHours >= 70) {
+    targetColumn = 'col1';
+    durText = '20 Hari & ≥70 Jam';
+  }
+
+  // Jika tidak memenuhi satupun dari 3 target durasi -> Bonus = 0
+  if (!targetColumn) {
+    let reason = 'Belum memenuhi syarat durasi';
+    if (safeDays < 20 && safeHours < 70) {
+      reason += ` (Min. 20 Hari & 70 Jam - saat ini ${safeDays} Hari, ${safeHours} Jam)`;
+    } else if (safeDays < 20) {
+      reason += ` (Min. 20 Hari Siaran - saat ini ${safeDays} Hari)`;
+    } else if (safeHours < 70) {
+      reason += ` (Min. 70 Jam Siaran - saat ini ${safeHours} Jam)`;
+    }
     return { bonus: 0, ruleText: reason, qualified: false };
   }
 
-  if (safeDays >= fullMonthDays) {
-    if (safeHours >= 110) {
-      if (safeBeans >= 130000) return { bonus: 30000, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier ≥130K)`, qualified: true };
-      if (safeBeans >= 70000)  return { bonus: 20000, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 70K–129.9K)`, qualified: true };
-      if (safeBeans >= 30000)  return { bonus: 15000, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 30K–69.9K)`, qualified: true };
-      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 10K–29.9K)`, qualified: true };
-      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥110 Jam (Tier 5K–9.9K)`, qualified: true };
+  // Kategori: New Host (C.b)
+  if (status === 'new') {
+    if (safeBeans < 2000) {
+      return { bonus: 0, ruleText: 'Belum mencapai syarat minimum 2,000 Beans', qualified: false };
     }
+    // New Host dikunci pada Tier 1 (200 / 500 / 800 Beans)
+    let bonus = 0;
+    if (targetColumn === 'col3') bonus = 800;
+    else if (targetColumn === 'col2') bonus = 500;
+    else bonus = 200;
 
-    if (safeHours >= 90) {
-      if (safeBeans >= 130000) return { bonus: 25000, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier ≥130K)`, qualified: true };
-      if (safeBeans >= 70000)  return { bonus: 15000, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 70K–129.9K)`, qualified: true };
-      if (safeBeans >= 30000)  return { bonus: 10000, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 30K–69.9K)`, qualified: true };
-      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 10K–29.9K)`, qualified: true };
-      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥90 Jam (Tier 5K–9.9K)`, qualified: true };
-    }
-
-    if (safeHours >= 70) {
-      if (safeBeans >= 130000) return { bonus: 20000, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier ≥130K)`, qualified: true };
-      if (safeBeans >= 70000)  return { bonus: 10000, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 70K–129.9K)`, qualified: true };
-      if (safeBeans >= 30000)  return { bonus: 10000, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 30K–69.9K)`, qualified: true };
-      if (safeBeans >= 10000)  return { bonus: 7500,  ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 10K–29.9K)`, qualified: true };
-      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥70 Jam (Tier 5K–9.9K)`, qualified: true };
-    }
-
-    if (safeHours >= 50) {
-      if (safeBeans >= 10000) return { bonus: 5000, ruleText: `${fullMonthDays} Hari & ≥50 Jam (Tier ≥10K)`, qualified: true };
-      return { bonus: 2100, ruleText: `${fullMonthDays} Hari & ≥50 Jam (Tier 5K–9.9K)`, qualified: true };
-    }
-
-    return { bonus: 1000, ruleText: `${fullMonthDays} Hari & 40–49.9 Jam (Flat 1,000)`, qualified: true };
+    return {
+      bonus,
+      ruleText: `Tier 1 New Host: ${durText} (+${formatComma(bonus)} Beans)`,
+      qualified: true,
+    };
   }
 
+  // Kategori: Old Host (C.b - Dimulai dari Tier 2 dengan target minimum 5.000 Beans)
+  if (safeBeans < 5000) {
+    return {
+      bonus: 0,
+      ruleText: 'Old Host minimal 5,000 Beans untuk Duration Bonus (Tier 1 tidak berlaku)',
+      qualified: false,
+    };
+  }
+
+  const matchedTier = DURATION_BONUS_TIERS.find(
+    (t) => t.minBeans >= 5000 && safeBeans >= t.minBeans
+  );
+
+  if (!matchedTier) {
+    return { bonus: 0, ruleText: 'Tier Duration Bonus tidak ditemukan', qualified: false };
+  }
+
+  let bonus = 0;
+  if (targetColumn === 'col3') bonus = matchedTier.bonusFullMonth110h;
+  else if (targetColumn === 'col2') bonus = matchedTier.bonus25d90h;
+  else bonus = matchedTier.bonus20d70h;
+
   return {
-    bonus: 1000,
-    ruleText: 'Syarat Dasar Terpenuhi: ≥15 Hari & ≥40 Jam (Flat 1,000)',
+    bonus,
+    ruleText: `${matchedTier.tierName}: ${durText} (+${formatComma(bonus)} Beans)`,
     qualified: true,
   };
 }
 
 /**
  * Menghitung Total Akumulasi Pendapatan Host (IDR, USD, Beans)
- * Formula Sesuai Brief Pemilik:
- * Total Beans = Pencapaian Dasar + Bonus Host Beans + Duration Bonus (hanya Premium Host)
+ * Formula Policy Oktober 2026:
+ * Total Beans = Pencapaian Dasar + Bonus Host Beans + Extra Bonus New Host + Duration Bonus
+
  * Estimasi Nilai USD = Total Beans ÷ 210
  * Estimasi Nilai IDR = (Total Beans ÷ 210) × Rp 17.800
- * Ketentuan Khusus Brief: "BONUS AGENCY & EXTRA BONUS AGENCY - TIDAK PERLU DIMASUKKAN."
  */
 export function calculateEstimatedIncome(
   status: HostStatus,
@@ -217,22 +280,31 @@ export function calculateEstimatedIncome(
   const safeHours = Math.max(0, Math.min(POLICY_CONSTANTS.HOURS_MAX, Number(hours) || 0));
 
   const hostBonusResult = calculateHostBonus(status, safeBeans, safeDays, safeHours);
-  const durationBonusResult = calculateDurationBonus(status, safeBeans, safeDays, safeHours, fullMonthDays);
+  const extraBonusResult = calculateNewHostExtraBonus(status, safeBeans);
+  const durationBonusResult = calculateDurationBonus(
+    status,
+    safeBeans,
+    safeDays,
+    safeHours,
+    fullMonthDays
+  );
 
-  // Duration bonus hanya berlaku untuk status Premium Host (Sesuai Brief Poin D)
-  const effectiveDurationBonus = status === 'premium' ? durationBonusResult.bonus : 0;
+  const effectiveDurationBonus = durationBonusResult.bonus;
+  const effectiveExtraBonus = extraBonusResult.bonus;
 
-  const totalBeans = safeBeans + hostBonusResult.bonus + effectiveDurationBonus;
+  const totalBeans = safeBeans + hostBonusResult.bonus + effectiveExtraBonus + effectiveDurationBonus;
   const usdValue = totalBeans / POLICY_CONSTANTS.EXCHANGE_RATE_BEANS_TO_USD;
   const idrValue = Math.round(usdValue * POLICY_CONSTANTS.USD_TO_IDR_RATE);
 
-  return {
+  return Object.freeze({
     baseBeans: safeBeans,
     hostBonus: hostBonusResult.bonus,
     hostBonusRule: hostBonusResult.ruleText,
     hostBonusQualified: hostBonusResult.qualified,
     isProrata: hostBonusResult.isProrata,
     tierName: hostBonusResult.tierName,
+    newHostExtraBonus: effectiveExtraBonus,
+    newHostExtraBonusRule: extraBonusResult.ruleText,
     durationBonus: effectiveDurationBonus,
     durationBonusRule: durationBonusResult.ruleText,
     durationQualified: durationBonusResult.qualified,
@@ -240,5 +312,6 @@ export function calculateEstimatedIncome(
     usdValue: usdValue,
     idrValue: idrValue,
     totalIncomeIdr: idrValue,
-  };
+  });
 }
+

@@ -29,14 +29,6 @@ export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React
       e.preventDefault();
       (e.target as HTMLInputElement).blur();
       onCalculate();
-      return;
-    }
-
-    const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
-    if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
-
-    if (!/^[0-9]$/.test(e.key)) {
-      e.preventDefault();
     }
   };
 
@@ -45,20 +37,6 @@ export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React
       e.preventDefault();
       (e.target as HTMLInputElement).blur();
       onCalculate();
-      return;
-    }
-
-    const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
-    if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
-
-    if (!/^[0-9.,]$/.test(e.key)) {
-      e.preventDefault();
-      return;
-    }
-
-    const val = (e.target as HTMLInputElement).value;
-    if ((e.key === '.' || e.key === ',') && (val.includes('.') || val.includes(','))) {
-      e.preventDefault();
     }
   };
 
