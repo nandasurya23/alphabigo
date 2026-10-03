@@ -154,5 +154,63 @@ describe('useCalculator Hook - Initial Zero/Unselected & Deferred Calculation', 
 
     expect(result.current.newHostMonth).toBe(1);
   });
+
+  it('TC-UI-08: Target Month default terdefinisi dan dapat diubah secara dinamis', () => {
+    const { result } = renderHook(() => useCalculator());
+
+    expect(result.current.targetMonth).toBeDefined();
+    expect(result.current.targetMonth.monthName).toBe(result.current.monthName);
+    expect(result.current.targetMonth.daysInMonth).toBe(result.current.daysInMonth);
+
+    // Ganti ke September (Index 8, 30 Hari)
+    act(() => {
+      result.current.setTargetMonthIndex(8, 2026);
+    });
+
+    expect(result.current.targetMonth.monthIndex).toBe(8);
+    expect(result.current.targetMonth.monthName).toBe('September');
+    expect(result.current.targetMonth.daysInMonth).toBe(30);
+    expect(result.current.daysInMonth).toBe(30);
+
+    // Ganti ke Februari (Index 1, 28 Hari pada tahun 2026)
+    act(() => {
+      result.current.setTargetMonthIndex(1, 2026);
+    });
+
+    expect(result.current.targetMonth.monthName).toBe('Februari');
+    expect(result.current.targetMonth.daysInMonth).toBe(28);
+    expect(result.current.daysInMonth).toBe(28);
+  });
+
+  it('TC-UI-09: Mengubah bulan target menyesuaikan clamping hari dan kalkulasi duration bonus', () => {
+    const { result } = renderHook(() => useCalculator());
+
+    // Set ke Oktober (Index 9, 31 Hari), 31 Hari siaran, 110 Jam
+    act(() => {
+      result.current.setTargetMonthIndex(9, 2026);
+      result.current.setStatus('premium');
+      result.current.setBeans(200000);
+      result.current.setDays(31);
+      result.current.setHours(110);
+      result.current.calculate();
+    });
+
+    expect(result.current.result.durationBonus).toBe(30000); // 31 Hari di Oktober = Full Live
+
+    // Ganti ke September (Index 8, 30 Hari). Hari otomatis ter-clamp dari 31 ke 30.
+    act(() => {
+      result.current.setTargetMonthIndex(8, 2026);
+    });
+
+    expect(result.current.days).toBe(30);
+
+    // Kalkulasi ulang untuk September: 30 Hari di September = Full Live (30.000 Beans)
+    act(() => {
+      result.current.calculate();
+    });
+
+    expect(result.current.result.durationBonus).toBe(30000);
+  });
 });
+
 

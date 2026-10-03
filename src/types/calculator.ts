@@ -6,9 +6,19 @@
 export type HostStatus = 'new' | 'premium' | '';
 export type NewHostMonth = 1 | 2; // 1 = Bulan 1, 2 = Bulan 2-3
 
+export interface TargetMonthInfo {
+  readonly monthIndex: number; // 0 - 11
+  readonly year: number;
+  readonly monthName: string;
+  readonly daysInMonth: number;
+  readonly isPreviousMonth?: boolean;
+  readonly isCurrentMonth?: boolean;
+}
+
 export interface CalculationInput {
   readonly status: HostStatus;
   readonly newHostMonth?: NewHostMonth;
+  readonly targetMonth?: TargetMonthInfo;
   readonly beans: number;
   readonly days: number;
   readonly hours: number;

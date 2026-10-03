@@ -15,6 +15,7 @@ html {
   color: var(--color-text-primary);
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
@@ -24,10 +25,19 @@ body {
   min-height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text-primary);
+  font-family: var(--font-family);
   line-height: 1.5;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+}
+
+input,
+button,
+select,
+textarea,
+optgroup {
+  font-family: inherit;
 }
 
 img, svg {

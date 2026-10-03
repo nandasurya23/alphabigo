@@ -5,11 +5,11 @@
  */
 
 import { useState, useMemo, useCallback, useRef } from 'react';
-import { HostStatus, NewHostMonth, CalculationResult } from '@/types/calculator';
+import { HostStatus, NewHostMonth, TargetMonthInfo, CalculationResult } from '@/types/calculator';
 import { calculateEstimatedIncome } from '@/engine/calculation-engine';
 import { generateAdvisorRecommendation } from '@/engine/advisor-engine';
 import { safeClampNumber, MAX_SAFE_BEANS } from '@/utils/security';
-import { getCurrentMonthInfo } from '@/constants/policy-constants';
+import { getDefaultTargetMonth, getMonthInfo } from '@/constants/policy-constants';
 
 const ZERO_CALCULATION_RESULT: CalculationResult = {
   tierName: 'Menunggu Kalkulasi',
@@ -33,6 +33,10 @@ const WAITING_ADVISOR_TEXT =
   'Silakan pilih kategori host dan masukkan target Beans Anda, lalu klik tombol <strong>CALCULATE NOW</strong> untuk melihat estimasi penghasilan.';
 
 export function useCalculator() {
+  // Smart Default Bulan Target (Tanggal 1-10 default Bulan Lalu, > 10 default Bulan Ini)
+  const defaultMonth = useMemo(() => getDefaultTargetMonth(), []);
+  const [targetMonth, setTargetMonth] = useState<TargetMonthInfo>(defaultMonth);
+
   // Input states (freely editable by user)
   const [status, setStatusState] = useState<HostStatus>('');
   const [newHostMonth, setNewHostMonthState] = useState<NewHostMonth>(1);
@@ -48,6 +52,16 @@ export function useCalculator() {
     days: 0,
     hours: 0,
   });
+
+  const setTargetMonthIndex = useCallback((monthIndex: number, year?: number) => {
+    const newMonthInfo = getMonthInfo(monthIndex, year ?? defaultMonth.year);
+    setTargetMonth(newMonthInfo);
+    // Jika input hari siaran melebihi jumlah hari bulan baru, sesuaikan ke batas maksimal
+    if (stateRef.current.days > newMonthInfo.daysInMonth) {
+      stateRef.current.days = newMonthInfo.daysInMonth;
+      setDaysState(newMonthInfo.daysInMonth);
+    }
+  }, [defaultMonth.year]);
 
   const setStatus = useCallback((newStatus: HostStatus) => {
     stateRef.current.status = newStatus;
@@ -82,6 +96,7 @@ export function useCalculator() {
   const [calculatedSnapshot, setCalculatedSnapshot] = useState<{
     status: HostStatus;
     newHostMonth: NewHostMonth;
+    targetMonth: TargetMonthInfo;
     beans: number;
     days: number;
     hours: number;
@@ -89,10 +104,9 @@ export function useCalculator() {
 
   const [calcTrigger, setCalcTrigger] = useState<number>(0);
 
-  // Otomatis mengambil data bulan berjalan (real-time now)
-  const currentMonth = useMemo(() => getCurrentMonthInfo(), []);
-  const daysInMonth = currentMonth.daysInMonth;
-  const monthName = currentMonth.monthName;
+  // Data bulan berjalan/target
+  const daysInMonth = targetMonth.daysInMonth;
+  const monthName = targetMonth.monthName;
 
   // Eksekusi kalkulasi HANYA saat tombol CALCULATE NOW diklik atau user tekan Enter
   const calculate = useCallback(() => {
@@ -101,13 +115,14 @@ export function useCalculator() {
       setCalculatedSnapshot({
         status: current.status,
         newHostMonth: current.newHostMonth,
+        targetMonth,
         beans: current.beans,
         days: current.days,
         hours: current.hours,
       });
     }
     setCalcTrigger((prev) => prev + 1);
-  }, []);
+  }, [targetMonth]);
 
   // isCalculated bernilai true HANYA jika tombol calculate sudah pernah dieksekusi dengan status valid
   const isCalculated = Boolean(calculatedSnapshot && calculatedSnapshot.status);
@@ -117,38 +132,43 @@ export function useCalculator() {
     if (!isCalculated || !calculatedSnapshot || !calculatedSnapshot.status) {
       return ZERO_CALCULATION_RESULT;
     }
+    const snapshotDaysInMonth = calculatedSnapshot.targetMonth.daysInMonth;
     const clampedBeans = safeClampNumber(calculatedSnapshot.beans, 0, MAX_SAFE_BEANS);
-    const clampedDays = safeClampNumber(calculatedSnapshot.days, 0, daysInMonth); // Batas maksimal kalender tetap dijaga
-    const clampedHours = safeClampNumber(calculatedSnapshot.hours, 0, 155); // Batas maksimal 155 jam tetap dijaga
+    const clampedDays = safeClampNumber(calculatedSnapshot.days, 0, snapshotDaysInMonth);
+    const clampedHours = safeClampNumber(calculatedSnapshot.hours, 0, 155);
+
     return calculateEstimatedIncome(
       calculatedSnapshot.status,
       clampedBeans,
       clampedDays,
       clampedHours,
-      daysInMonth,
+      snapshotDaysInMonth,
       calculatedSnapshot.newHostMonth
     );
-  }, [isCalculated, calculatedSnapshot, daysInMonth]);
+  }, [isCalculated, calculatedSnapshot]);
 
   const advisorText = useMemo(() => {
     if (!isCalculated || !calculatedSnapshot || !calculatedSnapshot.status) {
       return WAITING_ADVISOR_TEXT;
     }
+    const snapshotDaysInMonth = calculatedSnapshot.targetMonth.daysInMonth;
     const clampedBeans = safeClampNumber(calculatedSnapshot.beans, 0, MAX_SAFE_BEANS);
-    const clampedDays = safeClampNumber(calculatedSnapshot.days, 0, daysInMonth);
+    const clampedDays = safeClampNumber(calculatedSnapshot.days, 0, snapshotDaysInMonth);
     const clampedHours = safeClampNumber(calculatedSnapshot.hours, 0, 155);
+
     return generateAdvisorRecommendation(
       calculatedSnapshot.status,
       clampedBeans,
       clampedDays,
       clampedHours,
-      daysInMonth,
+      snapshotDaysInMonth,
       calculatedSnapshot.newHostMonth
     );
-  }, [isCalculated, calculatedSnapshot, daysInMonth]);
+  }, [isCalculated, calculatedSnapshot]);
 
   const resetToStandard = useCallback(() => {
     stateRef.current = { status: '', newHostMonth: 1, beans: 0, days: 0, hours: 0 };
+    setTargetMonth(defaultMonth);
     setStatusState('');
     setNewHostMonthState(1);
     setBeansState(0);
@@ -156,13 +176,15 @@ export function useCalculator() {
     setHoursState(0);
     setCalculatedSnapshot(null);
     setCalcTrigger(0);
-  }, []);
+  }, [defaultMonth]);
 
   return {
     status,
     setStatus,
     newHostMonth,
     setNewHostMonth,
+    targetMonth,
+    setTargetMonthIndex,
     monthName,
     daysInMonth,
     beans,

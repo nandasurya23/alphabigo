@@ -13,6 +13,8 @@ export const CockpitGrid: React.FC<CockpitGridProps> = ({ calculator }) => {
     setStatus,
     newHostMonth,
     setNewHostMonth,
+    targetMonth,
+    setTargetMonthIndex,
     monthName,
     daysInMonth,
     beans,
@@ -34,6 +36,7 @@ export const CockpitGrid: React.FC<CockpitGridProps> = ({ calculator }) => {
       <InputPanel
         status={status}
         newHostMonth={newHostMonth}
+        targetMonth={targetMonth}
         monthName={monthName}
         daysInMonth={daysInMonth}
         beans={beans}
@@ -41,6 +44,7 @@ export const CockpitGrid: React.FC<CockpitGridProps> = ({ calculator }) => {
         hours={hours}
         onStatusChange={setStatus}
         onNewHostMonthChange={setNewHostMonth}
+        onTargetMonthChange={setTargetMonthIndex}
         onBeansChange={setBeans}
         onDaysChange={setDays}
         onHoursChange={setHours}
