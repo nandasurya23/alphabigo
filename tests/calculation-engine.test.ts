@@ -337,3 +337,80 @@ describe('BIGO Calculation Engine - Boundaries & Prorata', () => {
     expect(res.usdValue).toBe(0);
   });
 });
+
+describe('BIGO Calculation Engine - New Host Bulan 1 vs Bulan 2-3 Tenure & Prorata', () => {
+  it('New Host Bulan 1: Bebas durasi & hari, Host Bonus & Extra Bonus cair penuh', () => {
+    // 50K Beans, 0 Hari & 0 Jam (Bulan 1)
+    const res = calculateEstimatedIncome('new', 50000, 0, 0, 31, 1);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(24000); // 48% (bebas durasi di Bulan 1)
+    expect(res.hostBonusQualified).toBe(true);
+    expect(res.isProrata).toBe(false);
+    expect(res.newHostExtraBonus).toBe(15000); // Tier 50K-69.9K
+    expect(res.durationBonus).toBe(0); // 0 jam < 70 jam
+    expect(res.totalBeans).toBe(89000);
+  });
+
+  it('New Host Bulan 1: Tetap dapat Duration Bonus jika input memenuhi 20 Hari & 70 Jam', () => {
+    const res = calculateEstimatedIncome('new', 50000, 20, 70, 31, 1);
+    expect(res.hostBonus).toBe(24000);
+    expect(res.newHostExtraBonus).toBe(15000);
+    expect(res.durationBonus).toBe(200); // Duration Bonus Tier 1
+    expect(res.durationQualified).toBe(true);
+    expect(res.totalBeans).toBe(89200);
+  });
+
+  it('New Host Bulan 2-3: Belum memenuhi syarat jika 0 Hari & 0 Jam (Host Bonus 0, Extra Bonus tetap cair)', () => {
+    const res = calculateEstimatedIncome('new', 50000, 0, 0, 31, 2);
+    expect(res.baseBeans).toBe(50000);
+    expect(res.hostBonus).toBe(0); // Wajib min 10 hari & 40 jam
+    expect(res.hostBonusQualified).toBe(false);
+    expect(res.newHostExtraBonus).toBe(15000); // Extra bonus berlaku selama 90 hari pertama
+    expect(res.durationBonus).toBe(0);
+    expect(res.totalBeans).toBe(65000); // 50K + 0 + 15K + 0
+  });
+
+  it('New Host Bulan 2-3: Gugur jika hari < 10 meskipun jam >= 40', () => {
+    const res = calculateEstimatedIncome('new', 50000, 9, 45, 31, 2);
+    expect(res.hostBonus).toBe(0);
+    expect(res.hostBonusQualified).toBe(false);
+    expect(res.newHostExtraBonus).toBe(15000);
+  });
+
+  it('New Host Bulan 2-3: Gugur jika jam < 40 meskipun hari >= 15', () => {
+    const res = calculateEstimatedIncome('new', 50000, 15, 38, 31, 2);
+    expect(res.hostBonus).toBe(0);
+    expect(res.hostBonusQualified).toBe(false);
+    expect(res.newHostExtraBonus).toBe(15000);
+  });
+
+  it('New Host Bulan 2-3: Berhak komisi prorata jika 10-14 Hari & >= 40 Jam (10 Hari)', () => {
+    // 50K Beans @ 48% = 24.000 -> (10 / 15) * 24.000 = 16.000 Beans
+    const res = calculateEstimatedIncome('new', 50000, 10, 40, 31, 2);
+    expect(res.hostBonus).toBe(16000);
+    expect(res.hostBonusQualified).toBe(true);
+    expect(res.isProrata).toBe(true);
+    expect(res.newHostExtraBonus).toBe(15000);
+    expect(res.totalBeans).toBe(81000); // 50K + 16K + 15K
+  });
+
+  it('New Host Bulan 2-3: Berhak komisi prorata jika 12 Hari & >= 40 Jam (12 Hari)', () => {
+    // 50K Beans @ 48% = 24.000 -> (12 / 15) * 24.000 = 19.200 Beans
+    const res = calculateEstimatedIncome('new', 50000, 12, 40, 31, 2);
+    expect(res.hostBonus).toBe(19200);
+    expect(res.hostBonusQualified).toBe(true);
+    expect(res.isProrata).toBe(true);
+    expect(res.newHostExtraBonus).toBe(15000);
+    expect(res.totalBeans).toBe(84200); // 50K + 19.2K + 15K
+  });
+
+  it('New Host Bulan 2-3: Memenuhi 15 Hari & 40 Jam berhak 100% Host Bonus', () => {
+    const res = calculateEstimatedIncome('new', 50000, 15, 40, 31, 2);
+    expect(res.hostBonus).toBe(24000);
+    expect(res.hostBonusQualified).toBe(true);
+    expect(res.isProrata).toBe(false);
+    expect(res.newHostExtraBonus).toBe(15000);
+    expect(res.totalBeans).toBe(89000);
+  });
+});
+

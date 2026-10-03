@@ -213,12 +213,28 @@
     transform: translate(4px, -3px) scale(1.08) rotate(2deg);
   }
 
+  .advisor-card {
+    padding: 12px 14px;
+    margin-top: 8px;
+  }
+
+  .advisor-badge {
+    font-size: 0.70rem;
+    gap: 5px;
+    margin-bottom: 4px;
+  }
+
+  .advisor-text {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
   .note-rules-list {
     gap: 6px;
   }
 
   .note-rules-list li {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     line-height: 1.4;
     padding-left: 14px;
   }

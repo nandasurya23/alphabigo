@@ -4,9 +4,11 @@
  */
 
 export type HostStatus = 'new' | 'premium' | '';
+export type NewHostMonth = 1 | 2; // 1 = Bulan 1, 2 = Bulan 2-3
 
 export interface CalculationInput {
   readonly status: HostStatus;
+  readonly newHostMonth?: NewHostMonth;
   readonly beans: number;
   readonly days: number;
   readonly hours: number;

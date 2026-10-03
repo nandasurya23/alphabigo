@@ -162,6 +162,74 @@
 }
 
 /* ==========================================================================
+   NEW HOST MONTH CAPSULE (BULAN 1 VS BULAN 2-3)
+   ========================================================================== */
+.new-host-month-capsule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.month-pill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(223, 177, 91, 0.2);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  text-align: center;
+}
+
+.month-pill:hover {
+  background: rgba(223, 177, 91, 0.08);
+  border-color: rgba(223, 177, 91, 0.4);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.month-pill.active {
+  background: linear-gradient(180deg, rgba(223, 177, 91, 0.22) 0%, rgba(168, 122, 24, 0.22) 100%);
+  border: 1px solid var(--color-accent);
+  box-shadow: 0 0 12px rgba(223, 177, 91, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+.month-pill .pill-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.month-pill.active .pill-title {
+  color: var(--color-accent-bright);
+}
+
+.month-pill .pill-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--color-text-muted);
+}
+
+.month-pill.active .pill-badge {
+  color: var(--color-accent);
+  background: rgba(223, 177, 91, 0.15);
+  border: 1px solid rgba(223, 177, 91, 0.3);
+}
+
+/* ==========================================================================
    2. FORM BODY & INPUT NUMERIC BARS (TARGET BEANS, VALID DAYS, VALID HOURS)
    ========================================================================== */
 .form-body {
@@ -276,43 +344,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-/* Quick Beans Target Chips */
-.quick-beans-container {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-
-.quick-beans-chip {
-  background: rgba(223, 177, 91, 0.08);
-  border: 1px solid rgba(223, 177, 91, 0.22);
-  border-radius: 9999px;
-  color: var(--color-text-secondary);
-  font-size: 0.76rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: inherit;
-  letter-spacing: 0.02em;
-}
-
-.quick-beans-chip:hover {
-  background: rgba(223, 177, 91, 0.18);
-  border-color: rgba(223, 177, 91, 0.45);
-  color: var(--color-accent-bright, #FFE58F);
-  transform: translateY(-1px);
-}
-
-.quick-beans-chip.active {
-  background: linear-gradient(180deg, rgba(223, 177, 91, 0.3) 0%, rgba(168, 122, 24, 0.3) 100%);
-  border-color: #FFE58F;
-  color: #FFE58F;
-  box-shadow: 0 0 10px rgba(223, 177, 91, 0.2);
 }
 
 .input-bean-icon {
@@ -723,6 +754,10 @@
   font-weight: 700;
 }
 
+.tier-inline-tag.tag-unqualified {
+  color: #FF5A5A;
+}
+
 .item-right-group {
   display: flex;
   flex-direction: column;
@@ -822,7 +857,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--color-accent-bright);
@@ -835,7 +870,7 @@
 }
 
 .advisor-text {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--color-text-secondary);
   line-height: 1.45;
 }

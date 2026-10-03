@@ -106,9 +106,6 @@ export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React
             />
             <span className="currency-tag">Days</span>
           </div>
-          <p className="field-hint">
-            Jumlah hari siaran aktif bulan {monthName} (Maksimal {maxDays} hari kalender - Full Day Live tanpa libur).
-          </p>
           <span
             id="days-error"
             className={`input-error-msg ${isDaysInvalid ? 'visible' : ''}`}
@@ -180,9 +177,6 @@ export const DurationInputsSection: React.FC<DurationInputsSectionProps> = React
             />
             <span className="currency-tag">Hours</span>
           </div>
-          <p className="field-hint">
-            Total durasi jam siaran per bulan (Contoh: 40 atau 40.5 jam, maks 155).
-          </p>
           <span
             id="hours-error"
             className={`input-error-msg ${isHoursInvalid ? 'visible' : ''}`}
