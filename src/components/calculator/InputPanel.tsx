@@ -1,5 +1,6 @@
 import React from 'react';
-import { HostStatus, NewHostMonth } from '@/types/calculator';
+import { HostStatus, NewHostMonth, TargetMonthInfo } from '@/types/calculator';
+import { TargetMonthSelector } from './TargetMonthSelector';
 import { HostCategoryDropdown } from './HostCategoryDropdown';
 import { TargetBeansInput } from './TargetBeansInput';
 import { DurationInputsSection } from './DurationInputsSection';
@@ -7,6 +8,7 @@ import { DurationInputsSection } from './DurationInputsSection';
 interface InputPanelProps {
   status: HostStatus;
   newHostMonth?: NewHostMonth;
+  targetMonth: TargetMonthInfo;
   monthName: string;
   daysInMonth: number;
   beans: number;
@@ -14,6 +16,7 @@ interface InputPanelProps {
   hours: number;
   onStatusChange: (status: HostStatus) => void;
   onNewHostMonthChange?: (month: NewHostMonth) => void;
+  onTargetMonthChange: (monthIndex: number, year?: number) => void;
   onBeansChange: (beans: number) => void;
   onDaysChange: (days: number) => void;
   onHoursChange: (hours: number) => void;
@@ -24,6 +27,7 @@ interface InputPanelProps {
 export const InputPanel: React.FC<InputPanelProps> = React.memo(({
   status,
   newHostMonth,
+  targetMonth,
   monthName,
   daysInMonth,
   beans,
@@ -31,6 +35,7 @@ export const InputPanel: React.FC<InputPanelProps> = React.memo(({
   hours,
   onStatusChange,
   onNewHostMonthChange,
+  onTargetMonthChange,
   onBeansChange,
   onDaysChange,
   onHoursChange,
@@ -51,6 +56,12 @@ export const InputPanel: React.FC<InputPanelProps> = React.memo(({
         </div>
 
         <div className="form-body">
+          {/* 0. Bulan Target Siaran */}
+          <TargetMonthSelector
+            targetMonth={targetMonth}
+            onTargetMonthChange={onTargetMonthChange}
+          />
+
           {/* 1. Kategori Host */}
           <HostCategoryDropdown
             status={status}

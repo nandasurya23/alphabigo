@@ -157,7 +157,7 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
             title="Khusus bulan pertama: Bebas target durasi & hari, komisi pokok tetap cair 100%"
           >
             <span className="pill-title">Bulan 1</span>
-            <span className="pill-badge">Bebas Durasi</span>
+            <span className="pill-badge">Free Durasi &amp; Hari</span>
           </button>
           <button
             type="button"
@@ -168,7 +168,7 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
             title="Bulan ke-2 & 3: Wajib minimal 15 Hari & 40 Jam siaran valid"
           >
             <span className="pill-title">Bulan 2 &amp; 3</span>
-            <span className="pill-badge">Wajib 15 Hari</span>
+            <span className="pill-badge">Wajib 15 Hari &amp; 40 Jam</span>
           </button>
         </div>
       )}

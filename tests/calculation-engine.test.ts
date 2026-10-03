@@ -310,6 +310,24 @@ describe('BIGO Calculation Engine - Duration Bonus Matriks', () => {
     expect(res.bonus).toBe(30000);
     expect(res.qualified).toBe(true);
   });
+
+  it('Bulan 28 Hari (Februari Biasa): 28 hari & 110 jam memenuhi kolom Full Live', () => {
+    const res = calculateDurationBonus('premium', 200000, 28, 110, 28);
+    expect(res.bonus).toBe(30000);
+    expect(res.qualified).toBe(true);
+  });
+
+  it('Kasus Nyata Host: 30 Hari & 110 Jam di September (30 Hari) vs Oktober (31 Hari)', () => {
+    // Di September (30 Hari): 30 hari adalah Full Live -> dapat Tier 3 (30.000 Beans)
+    const septRes = calculateDurationBonus('premium', 200000, 30, 110, 30);
+    expect(septRes.bonus).toBe(30000);
+    expect(septRes.ruleText).toContain('30 Hari & ≥110 Jam');
+
+    // Di Oktober (31 Hari): 30 hari BUKAN Full Live -> masuk Kolom 2 (25 Hari & ≥90 Jam -> 4.500 Beans)
+    const octRes = calculateDurationBonus('premium', 200000, 30, 110, 31);
+    expect(octRes.bonus).toBe(4500);
+    expect(octRes.ruleText).toContain('25 Hari & ≥90 Jam');
+  });
 });
 
 describe('BIGO Calculation Engine - Boundaries & Prorata', () => {

@@ -11,6 +11,7 @@ import {
   AgencyBonusPolicy,
   ExtraAgencyBonusPolicy,
 } from '@/types/policy';
+import { TargetMonthInfo } from '@/types/calculator';
 import { deepFreeze } from '@/utils/security';
 
 export const POLICY_CONSTANTS: PolicyConstants = deepFreeze({
@@ -27,33 +28,83 @@ export const POLICY_CONSTANTS: PolicyConstants = deepFreeze({
   HOURS_MAX: 155,
 });
 
+export const MONTH_NAMES: readonly string[] = deepFreeze([
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+]);
+
+/**
+ * Mendapatkan informasi spesifik suatu bulan berdasarkan index bulan (0-11) dan tahun
+ */
+export function getMonthInfo(monthIndex: number, year: number = new Date().getFullYear()): TargetMonthInfo {
+  const safeMonthIndex = Math.max(0, Math.min(11, Math.floor(monthIndex)));
+  const daysInMonth = new Date(year, safeMonthIndex + 1, 0).getDate();
+  const now = new Date();
+  const currentMonthIndex = now.getMonth();
+  const prevMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+  const isCurrentMonth = safeMonthIndex === currentMonthIndex && year === now.getFullYear();
+  const isPreviousMonth = safeMonthIndex === prevMonthIndex;
+
+  return {
+    monthIndex: safeMonthIndex,
+    year,
+    monthName: MONTH_NAMES[safeMonthIndex],
+    daysInMonth,
+    isCurrentMonth,
+    isPreviousMonth,
+  };
+}
+
 /**
  * Mendapatkan informasi bulan berjalan secara otomatis dan akurat
  * termasuk penanganan tahun kabisat via kalender native JS.
  */
-export function getCurrentMonthInfo(date: Date = new Date()) {
-  const year = date.getFullYear();
-  const monthIndex = date.getMonth(); // 0 - 11
-  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-  const MONTH_NAMES = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember',
-  ];
+export function getCurrentMonthInfo(date: Date = new Date()): TargetMonthInfo {
+  return getMonthInfo(date.getMonth(), date.getFullYear());
+}
+
+/**
+ * Smart Default untuk penentuan Bulan Target awal:
+ * - Jika hari ini tanggal 1-10 (siklus pencairan gaji BIGO): Otomatis pilih Bulan Lalu.
+ * - Jika hari ini tanggal > 10: Otomatis pilih Bulan Berjalan.
+ */
+export function getDefaultTargetMonth(date: Date = new Date()): TargetMonthInfo {
+  const dayOfMonth = date.getDate();
+  const currentMonthIndex = date.getMonth();
+  const currentYear = date.getFullYear();
+
+  if (dayOfMonth <= 10) {
+    const targetMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+    const targetYear = currentMonthIndex === 0 ? currentYear - 1 : currentYear;
+    return getMonthInfo(targetMonthIndex, targetYear);
+  }
+
+  return getMonthInfo(currentMonthIndex, currentYear);
+}
+
+/**
+ * Opsi Kapsul Cepat Bulan Lalu vs Bulan Ini untuk host awam
+ */
+export function getQuickMonthOptions(date: Date = new Date()) {
+  const currentMonthIndex = date.getMonth();
+  const currentYear = date.getFullYear();
+  const prevMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+  const prevYear = currentMonthIndex === 0 ? currentYear - 1 : currentYear;
+
   return {
-    monthIndex,
-    monthName: MONTH_NAMES[monthIndex],
-    year,
-    daysInMonth,
+    previousMonth: getMonthInfo(prevMonthIndex, prevYear),
+    currentMonth: getMonthInfo(currentMonthIndex, currentYear),
+    allMonths: MONTH_NAMES.map((_, idx) => getMonthInfo(idx, currentYear)),
   };
 }
 

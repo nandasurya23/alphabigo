@@ -98,6 +98,15 @@
     border-radius: var(--radius-sm);
   }
 
+  /* Mencegah iOS Safari auto-zoom paksa saat input diketuk */
+  .custom-beans-input {
+    font-size: 16px;
+  }
+
+  .custom-beans-input::placeholder {
+    font-size: 16px;
+  }
+
   .header-status-capsule::-webkit-scrollbar {
     display: none;
   }
@@ -237,5 +246,27 @@
     font-size: 0.75rem;
     line-height: 1.4;
     padding-left: 14px;
+  }
+}
+
+/* Narrow Mobile & Compact Phones (<= 390px, e.g. iPhone SE, iPhone 12/13 mini, Galaxy A-series) */
+@media (max-width: 390px) {
+  .month-pill {
+    padding: 8px 6px;
+  }
+
+  .month-pill .pill-title {
+    font-size: 0.78rem;
+  }
+
+  .month-pill .pill-badge {
+    font-size: 0.62rem;
+    padding: 1px 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .target-month-capsule,
+  .new-host-month-capsule {
+    gap: 6px;
   }
 }
