@@ -67,14 +67,14 @@ describe('BIGO Calculation Engine - Skenario Resmi Pemilik (Policy Oktober 2026)
     expect(res.idrValue).toBe(6272381);
   });
 
-  it('KASUS 4 (New Host): 50.000 Beans, 20 Hari & 75 Jam', () => {
+  it('KASUS 4 (New Host): 50.000 Beans, 20 Hari & 75 Jam (Mendapatkan Tier 30K-69.9K)', () => {
     const res = calculateEstimatedIncome('new', 50000, 20, 75);
     expect(res.baseBeans).toBe(50000);
     expect(res.hostBonus).toBe(24000);
     expect(res.newHostExtraBonus).toBe(15000);
-    expect(res.durationBonus).toBe(200); // New Host locked at Tier 1 (20h/70j)
-    expect(res.totalBeans).toBe(89200);
-    expect(res.idrValue).toBe(7560762);
+    expect(res.durationBonus).toBe(2300); // Aturan baru: New Host berhak atas tier Beans yang dicapai (2.300)
+    expect(res.totalBeans).toBe(91300);
+    expect(res.idrValue).toBe(7738762);
   });
 
   it('KASUS 4b (Old Host): 50.000 Beans, 20 Hari & 75 Jam', () => {
@@ -87,15 +87,14 @@ describe('BIGO Calculation Engine - Skenario Resmi Pemilik (Policy Oktober 2026)
     expect(res.idrValue).toBe(6467333);
   });
 
-
-  it('KASUS 5 (New Host): 200.000 Beans, 31 Hari & 115 Jam', () => {
+  it('KASUS 5 (New Host): 200.000 Beans, 31 Hari & 115 Jam (Mendapatkan Tier >=200K)', () => {
     const res = calculateEstimatedIncome('new', 200000, 31, 115, 31);
     expect(res.baseBeans).toBe(200000);
     expect(res.hostBonus).toBe(104000); // 52%
     expect(res.newHostExtraBonus).toBe(65000); // Tier 200K-299.9K
-    expect(res.durationBonus).toBe(800); // New Host Tier 1 Column 3
-    expect(res.totalBeans).toBe(369800);
-    expect(res.idrValue).toBe(31344952);
+    expect(res.durationBonus).toBe(30000); // Aturan baru: New Host berhak hingga 30.000 Beans
+    expect(res.totalBeans).toBe(399000);
+    expect(res.idrValue).toBe(33820000);
   });
 
   it('KASUS 5b (Old Host): 200.000 Beans, 31 Hari & 115 Jam', () => {
@@ -285,18 +284,22 @@ describe('BIGO Calculation Engine - Duration Bonus Matriks', () => {
     expect(calculateDurationBonus('premium', 300000, 31, 110, 31).bonus).toBe(30000);
   });
 
-  it('New Host selalu terkunci pada Tier 1 di semua tingkat Beans', () => {
-    // 20h & 70j -> 200
+  it('New Host mendapatkan Duration Bonus sesuai tingkat Beans (hingga 30.000 Beans)', () => {
+    // 3.000 Beans (Tier 1: 2,000 - 4,999 Beans)
     expect(calculateDurationBonus('new', 3000, 20, 70).bonus).toBe(200);
-    expect(calculateDurationBonus('new', 500000, 20, 70).bonus).toBe(200);
-
-    // 25h & 90j -> 500
     expect(calculateDurationBonus('new', 3000, 25, 90).bonus).toBe(500);
-    expect(calculateDurationBonus('new', 500000, 25, 90).bonus).toBe(500);
-
-    // 31h & 110j -> 800
     expect(calculateDurationBonus('new', 3000, 31, 110, 31).bonus).toBe(800);
-    expect(calculateDurationBonus('new', 500000, 31, 110, 31).bonus).toBe(800);
+
+    // 50.000 Beans (Tier 30K - 69.9K Beans) -> Mendapatkan 2.300 / 3.400 / 15.000
+    expect(calculateDurationBonus('new', 50000, 20, 70).bonus).toBe(2300);
+    expect(calculateDurationBonus('new', 50000, 25, 90).bonus).toBe(3400);
+    expect(calculateDurationBonus('new', 50000, 31, 110, 31).bonus).toBe(15000);
+
+    // 200.000 Beans / 500.000 Beans (Tier >= 200K Beans) -> Mendapatkan hingga 30.000 Beans
+    expect(calculateDurationBonus('new', 200000, 20, 70).bonus).toBe(2700);
+    expect(calculateDurationBonus('new', 200000, 25, 90).bonus).toBe(4500);
+    expect(calculateDurationBonus('new', 200000, 31, 110, 31).bonus).toBe(30000);
+    expect(calculateDurationBonus('new', 500000, 31, 110, 31).bonus).toBe(30000);
   });
 
   it('Bulan 30 Hari (Contoh: April): 30 hari & 110 jam memenuhi kolom Full Live', () => {
@@ -370,12 +373,18 @@ describe('BIGO Calculation Engine - New Host Bulan 1 vs Bulan 2-3 Tenure & Prora
   });
 
   it('New Host Bulan 1: Tetap dapat Duration Bonus jika input memenuhi 20 Hari & 70 Jam', () => {
-    const res = calculateEstimatedIncome('new', 50000, 20, 70, 31, 1);
-    expect(res.hostBonus).toBe(24000);
-    expect(res.newHostExtraBonus).toBe(15000);
-    expect(res.durationBonus).toBe(200); // Duration Bonus Tier 1
-    expect(res.durationQualified).toBe(true);
-    expect(res.totalBeans).toBe(89200);
+    // 3.000 Beans -> Tier 1 (200 Beans)
+    const resLow = calculateEstimatedIncome('new', 3000, 20, 70, 31, 1);
+    expect(resLow.durationBonus).toBe(200);
+    expect(resLow.durationQualified).toBe(true);
+
+    // 50.000 Beans -> Tier 30K-69.9K (2.300 Beans)
+    const resHigh = calculateEstimatedIncome('new', 50000, 20, 70, 31, 1);
+    expect(resHigh.hostBonus).toBe(24000);
+    expect(resHigh.newHostExtraBonus).toBe(15000);
+    expect(resHigh.durationBonus).toBe(2300); // Aturan baru: Tier 30K-69.9K
+    expect(resHigh.durationQualified).toBe(true);
+    expect(resHigh.totalBeans).toBe(91300);
   });
 
   it('New Host Bulan 2-3: Belum memenuhi syarat jika 0 Hari & 0 Jam (Host Bonus 0, Extra Bonus tetap cair)', () => {

@@ -215,26 +215,18 @@ export function calculateDurationBonus(
     };
   }
 
-  // Kategori: New Host (C.b)
-  if (status === 'new') {
-    if (safeBeans < 2000) {
-      return { bonus: 0, ruleText: 'Belum mencapai syarat minimum 2,000 Beans', qualified: false };
-    }
-    // New Host dikunci pada Tier 1 (200 / 500 / 800 Beans)
-    let bonus = 0;
-    if (targetColumn === 'col3') bonus = 800;
-    else if (targetColumn === 'col2') bonus = 500;
-    else bonus = 200;
-
+  // Evaluasi Kualifikasi Duration Bonus:
+  // - New Host: Minimal 2.000 Beans (berhak klaim dari Tier 1 hingga Tier ≥200K hingga 30.000 Beans)
+  // - Old Host: Minimal 5.000 Beans (Tier 1 level 2.000 Beans eksklusif untuk New Host)
+  if (status === 'new' && safeBeans < 2000) {
     return {
-      bonus,
-      ruleText: `Tier 1 New Host: ${durText} (+${formatComma(bonus)} Beans)`,
-      qualified: true,
+      bonus: 0,
+      ruleText: 'New Host minimal 2,000 Beans untuk Duration Bonus',
+      qualified: false,
     };
   }
 
-  // Kategori: Old Host (C.b - Dimulai dari Tier 2 dengan target minimum 5.000 Beans)
-  if (safeBeans < 5000) {
+  if (status === 'premium' && safeBeans < 5000) {
     return {
       bonus: 0,
       ruleText: 'Old Host minimal 5,000 Beans untuk Duration Bonus (Tier 1 tidak berlaku)',
@@ -242,9 +234,12 @@ export function calculateDurationBonus(
     };
   }
 
-  const matchedTier = DURATION_BONUS_TIERS.find(
-    (t) => t.minBeans >= 5000 && safeBeans >= t.minBeans
-  );
+  const matchedTier = DURATION_BONUS_TIERS.find((t) => {
+    if (status === 'premium') {
+      return t.minBeans >= 5000 && safeBeans >= t.minBeans;
+    }
+    return safeBeans >= t.minBeans;
+  });
 
   if (!matchedTier) {
     return { bonus: 0, ruleText: 'Tier Duration Bonus tidak ditemukan', qualified: false };
