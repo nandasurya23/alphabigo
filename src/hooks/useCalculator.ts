@@ -5,7 +5,7 @@
  */
 
 import { useState, useMemo, useCallback, useRef } from 'react';
-import { HostStatus, CalculationResult } from '@/types/calculator';
+import { HostStatus, NewHostMonth, CalculationResult } from '@/types/calculator';
 import { calculateEstimatedIncome } from '@/engine/calculation-engine';
 import { generateAdvisorRecommendation } from '@/engine/advisor-engine';
 import { safeClampNumber, MAX_SAFE_BEANS } from '@/utils/security';
@@ -29,13 +29,13 @@ const ZERO_CALCULATION_RESULT: CalculationResult = {
   totalIncomeIdr: 0,
 };
 
-
 const WAITING_ADVISOR_TEXT =
   'Silakan pilih kategori host dan masukkan target Beans Anda, lalu klik tombol <strong>CALCULATE NOW</strong> untuk melihat estimasi penghasilan.';
 
 export function useCalculator() {
   // Input states (freely editable by user)
   const [status, setStatusState] = useState<HostStatus>('');
+  const [newHostMonth, setNewHostMonthState] = useState<NewHostMonth>(1);
   const [beans, setBeansState] = useState<number>(0);
   const [days, setDaysState] = useState<number>(0);
   const [hours, setHoursState] = useState<number>(0);
@@ -43,6 +43,7 @@ export function useCalculator() {
   // Synchronous state ref to prevent stale closures during batch updates
   const stateRef = useRef({
     status: '' as HostStatus,
+    newHostMonth: 1 as NewHostMonth,
     beans: 0,
     days: 0,
     hours: 0,
@@ -50,7 +51,16 @@ export function useCalculator() {
 
   const setStatus = useCallback((newStatus: HostStatus) => {
     stateRef.current.status = newStatus;
+    if (newStatus === 'new') {
+      stateRef.current.newHostMonth = 1;
+      setNewHostMonthState(1);
+    }
     setStatusState(newStatus);
+  }, []);
+
+  const setNewHostMonth = useCallback((month: NewHostMonth) => {
+    stateRef.current.newHostMonth = month;
+    setNewHostMonthState(month);
   }, []);
 
   const setBeans = useCallback((newBeans: number) => {
@@ -71,6 +81,7 @@ export function useCalculator() {
   // Snapshot hasil kalkulasi: HANYA diisi saat tombol CALCULATE NOW atau Enter dieksekusi
   const [calculatedSnapshot, setCalculatedSnapshot] = useState<{
     status: HostStatus;
+    newHostMonth: NewHostMonth;
     beans: number;
     days: number;
     hours: number;
@@ -89,6 +100,7 @@ export function useCalculator() {
     if (current.status) {
       setCalculatedSnapshot({
         status: current.status,
+        newHostMonth: current.newHostMonth,
         beans: current.beans,
         days: current.days,
         hours: current.hours,
@@ -108,7 +120,14 @@ export function useCalculator() {
     const clampedBeans = safeClampNumber(calculatedSnapshot.beans, 0, MAX_SAFE_BEANS);
     const clampedDays = safeClampNumber(calculatedSnapshot.days, 0, daysInMonth); // Batas maksimal kalender tetap dijaga
     const clampedHours = safeClampNumber(calculatedSnapshot.hours, 0, 155); // Batas maksimal 155 jam tetap dijaga
-    return calculateEstimatedIncome(calculatedSnapshot.status, clampedBeans, clampedDays, clampedHours, daysInMonth);
+    return calculateEstimatedIncome(
+      calculatedSnapshot.status,
+      clampedBeans,
+      clampedDays,
+      clampedHours,
+      daysInMonth,
+      calculatedSnapshot.newHostMonth
+    );
   }, [isCalculated, calculatedSnapshot, daysInMonth]);
 
   const advisorText = useMemo(() => {
@@ -118,12 +137,20 @@ export function useCalculator() {
     const clampedBeans = safeClampNumber(calculatedSnapshot.beans, 0, MAX_SAFE_BEANS);
     const clampedDays = safeClampNumber(calculatedSnapshot.days, 0, daysInMonth);
     const clampedHours = safeClampNumber(calculatedSnapshot.hours, 0, 155);
-    return generateAdvisorRecommendation(calculatedSnapshot.status, clampedBeans, clampedDays, clampedHours, daysInMonth);
+    return generateAdvisorRecommendation(
+      calculatedSnapshot.status,
+      clampedBeans,
+      clampedDays,
+      clampedHours,
+      daysInMonth,
+      calculatedSnapshot.newHostMonth
+    );
   }, [isCalculated, calculatedSnapshot, daysInMonth]);
 
   const resetToStandard = useCallback(() => {
-    stateRef.current = { status: '', beans: 0, days: 0, hours: 0 };
+    stateRef.current = { status: '', newHostMonth: 1, beans: 0, days: 0, hours: 0 };
     setStatusState('');
+    setNewHostMonthState(1);
     setBeansState(0);
     setDaysState(0);
     setHoursState(0);
@@ -134,6 +161,8 @@ export function useCalculator() {
   return {
     status,
     setStatus,
+    newHostMonth,
+    setNewHostMonth,
     monthName,
     daysInMonth,
     beans,

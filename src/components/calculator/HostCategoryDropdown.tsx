@@ -1,14 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { HostStatus } from '@/types/calculator';
+import { HostStatus, NewHostMonth } from '@/types/calculator';
 
 interface HostCategoryDropdownProps {
   status: HostStatus;
+  newHostMonth?: NewHostMonth;
   onStatusChange: (status: HostStatus) => void;
+  onNewHostMonthChange?: (month: NewHostMonth) => void;
 }
 
 export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.memo(({
   status,
+  newHostMonth = 1,
   onStatusChange,
+  onNewHostMonthChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -49,7 +53,7 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
         </label>
         <span className="status-indicator-badge" id="status-indicator-badge">
           {status === 'new'
-            ? 'Bulan 1-3'
+            ? (newHostMonth === 1 ? 'New Host: Bulan 1' : 'New Host: Bulan 2-3')
             : status === 'premium'
             ? 'Bulan 4 sampai seterusnya'
             : 'Belum Dipilih'}
@@ -77,10 +81,10 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
             </svg>
             <span className="selected-text" id="dropdown-selected-label">
               {status === 'new'
-                ? 'New Host (Bulan 1-3)'
+                ? `New Host (${newHostMonth === 1 ? 'Bulan 1' : 'Bulan 2-3'})`
                 : status === 'premium'
-                ? 'Premium Host (Bulan 4 sampai seterusnya)'
-                : 'Pilih Kategori Host (Contoh: Premium Host)'}
+                ? 'Old Host (Bulan ke-4 sampai seterusnya)'
+                : 'Pilih Kategori Host (Contoh: New Host)'}
             </span>
           </span>
           <svg
@@ -114,10 +118,10 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
           >
             <div className="option-header-row">
               <span className="option-title">New Host (Bulan 1-3)</span>
-              <span className="option-tag">Bebas Durasi + Extra Bonus</span>
+              <span className="option-tag">Extra Bonus New Host</span>
             </div>
             <div className="option-desc">
-              Komisi 45%–76% bebas syarat durasi + Extra Bonus New Host + Bonus Durasi Tier 1.
+              Bonus Host Bigo (%) + Extra Bonus New Host + Duration Bonus
             </div>
 
           </div>
@@ -131,19 +135,43 @@ export const HostCategoryDropdown: React.FC<HostCategoryDropdownProps> = React.m
             onClick={() => handleSelect('premium')}
           >
             <div className="option-header-row">
-              <span className="option-title">Premium Host (Bulan 4 sampai seterusnya)</span>
+              <span className="option-title">Old Host (Bulan ke-4 sampai seterusnya)</span>
               <span className="option-tag gold">Wajib 15 Hari &amp; 40 Jam</span>
             </div>
             <div className="option-desc">
-              Persentase sama (45%–76%) dengan syarat 15 hari &amp; 40 jam + Duration Bonus berjenjang hingga 30.000 Beans.
+              Bonus Host Bigo (%) + Duration Bonus
             </div>
           </div>
         </div>
       </div>
 
-      <p className="field-hint" style={{ marginTop: '8px' }}>
-        Pilih kategori host kamu di BIGO LIVE (New Host: Bulan 1–3, atau Premium: Bulan 4+).
-      </p>
+      {/* Sub-Pills Pilihan Masa Kerja New Host (Bulan 1 vs Bulan 2 & 3) */}
+      {status === 'new' && onNewHostMonthChange && (
+        <div className="new-host-month-capsule" role="radiogroup" aria-label="Pilih Masa Kerja New Host">
+          <button
+            type="button"
+            className={`month-pill ${newHostMonth === 1 ? 'active' : ''}`}
+            onClick={() => onNewHostMonthChange(1)}
+            role="radio"
+            aria-checked={newHostMonth === 1}
+            title="Khusus bulan pertama: Bebas target durasi & hari, komisi pokok tetap cair 100%"
+          >
+            <span className="pill-title">Bulan 1</span>
+            <span className="pill-badge">Bebas Durasi</span>
+          </button>
+          <button
+            type="button"
+            className={`month-pill ${newHostMonth === 2 ? 'active' : ''}`}
+            onClick={() => onNewHostMonthChange(2)}
+            role="radio"
+            aria-checked={newHostMonth === 2}
+            title="Bulan ke-2 & 3: Wajib minimal 15 Hari & 40 Jam siaran valid"
+          >
+            <span className="pill-title">Bulan 2 &amp; 3</span>
+            <span className="pill-badge">Wajib 15 Hari</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 });

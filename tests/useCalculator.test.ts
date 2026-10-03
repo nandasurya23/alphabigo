@@ -113,4 +113,46 @@ describe('useCalculator Hook - Initial Zero/Unselected & Deferred Calculation', 
     expect(typeof result.current.monthName).toBe('string');
     expect(result.current.monthName.length).toBeGreaterThan(0);
   });
+
+  it('TC-UI-07: newHostMonth default adalah 1 dan dapat diubah ke 2 (Bulan 2-3)', () => {
+    const { result } = renderHook(() => useCalculator());
+
+    expect(result.current.newHostMonth).toBe(1);
+
+    act(() => {
+      result.current.setStatus('new');
+      result.current.setBeans(50000);
+      result.current.setNewHostMonth(2);
+    });
+
+    expect(result.current.newHostMonth).toBe(2);
+
+    // Hitung kalkulasi dengan Bulan 2 & 0 hari/jam -> bonus host gugur
+    act(() => {
+      result.current.calculate();
+    });
+
+    expect(result.current.isCalculated).toBe(true);
+    expect(result.current.result.hostBonusQualified).toBe(false);
+    expect(result.current.result.hostBonus).toBe(0);
+    expect(result.current.result.newHostExtraBonus).toBe(15000);
+
+    // Ganti kembali ke Bulan 1 dan calculate -> bonus host cair penuh
+    act(() => {
+      result.current.setNewHostMonth(1);
+      result.current.calculate();
+    });
+
+    expect(result.current.newHostMonth).toBe(1);
+    expect(result.current.result.hostBonusQualified).toBe(true);
+    expect(result.current.result.hostBonus).toBe(24000);
+
+    // Reset mengembalikan newHostMonth ke 1
+    act(() => {
+      result.current.resetToStandard();
+    });
+
+    expect(result.current.newHostMonth).toBe(1);
+  });
 });
+

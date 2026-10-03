@@ -21,7 +21,7 @@ export const HeroIncomeBox: React.FC<HeroIncomeBoxProps> = React.memo(({
       aria-live="polite"
       aria-atomic="true"
     >
-      <div className="hero-label-top">TOTAL ESTIMASI PENGHASILAN</div>
+      <div className="hero-label-top">Total Estimasi Income</div>
       <div className="hero-values-combined">
         <span className="hero-idr-wrap">
           <span className="hero-currency-tag">Rp</span>

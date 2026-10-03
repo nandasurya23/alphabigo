@@ -16,7 +16,7 @@ export const AppFooter: React.FC = React.memo(() => {
           </div>
 
           <div className="footer-meta-lockup">
-            <span className="footer-tag">Q2-April 2026</span>
+            <span className="footer-tag">Eff. 1 Oct 2026</span>
             <span className="footer-dot-sep">•</span>
             <span className="footer-tag">210 Beans = $1</span>
             <span className="footer-dot-sep">•</span>

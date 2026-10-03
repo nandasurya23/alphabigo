@@ -41,7 +41,7 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
   return (
     <div className="breakdown-ledger-container">
       <div className="ledger-header-row">
-        <h3 className="ledger-title-text">Rincian Komponen Penghasilan</h3>
+        <h3 className="ledger-title-text">Rincian Income Host</h3>
         <div id="status-tier-badge" className="tier-pill">
           {isCalculated ? result.tierName : 'Menunggu Kalkulasi'}
         </div>
@@ -111,8 +111,13 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
                 <span id="breakdown-bonus-beans">
                   {isCalculated ? `+${formatComma(hostBonus)} Beans` : '+0 Beans'}
                 </span>
-                <span className="tier-inline-tag" id="breakdown-bonus-rule">
-                  {isCalculated ? `(${result.hostBonusRule})` : '(-)'}
+                <span
+                  className={`tier-inline-tag ${isCalculated && !result.hostBonusQualified ? 'tag-unqualified' : ''}`}
+                  id="breakdown-bonus-rule"
+                >
+                  {isCalculated
+                    ? (result.hostBonusQualified ? `(${result.hostBonusRule})` : result.hostBonusRule)
+                    : '(-)'}
                 </span>
               </div>
             </div>
@@ -195,8 +200,13 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
                 <span id="breakdown-duration-beans">
                   {isCalculated ? `+${formatComma(durationBonus)} Beans` : '+0 Beans'}
                 </span>
-                <span className="tier-inline-tag" id="breakdown-duration-rule">
-                  {isCalculated ? `(${result.durationBonusRule})` : '(-)'}
+                <span
+                  className={`tier-inline-tag ${isCalculated && !result.durationQualified ? 'tag-unqualified' : ''}`}
+                  id="breakdown-duration-rule"
+                >
+                  {isCalculated
+                    ? (result.durationQualified ? `(${result.durationBonusRule})` : result.durationBonusRule)
+                    : '(-)'}
                 </span>
               </div>
             </div>
@@ -237,8 +247,8 @@ export const BreakdownLedger: React.FC<BreakdownLedgerProps> = React.memo(({
               </div>
               <div className="total-subtext-note" id="ledger-beans-subtext">
                 {status === 'new'
-                  ? 'Akumulasi Pencapaian + Bonus Host + Extra Bonus + Duration Bonus'
-                  : 'Akumulasi Pencapaian + Bonus Host + Duration Bonus'}
+                  ? 'Akumulasi Target Beans + Bonus Host + Extra Bonus New Host + Duration Bonus'
+                  : 'Akumulasi Target Beans + Bonus Host + Duration Bonus'}
               </div>
             </div>
           </div>

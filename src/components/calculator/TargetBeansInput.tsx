@@ -155,37 +155,6 @@ export const TargetBeansInput: React.FC<TargetBeansInputProps> = React.memo(({
 
           <span className="currency-tag">Beans</span>
         </div>
-
-        {/* Quick Beans Target Chips (Milestone Populer BIGO) */}
-        <div className="quick-beans-container" aria-label="Pilihan Cepat Target Beans">
-          {[
-            { label: '10K', value: 10_000 },
-            { label: '50K', value: 50_000 },
-            { label: '130K', value: 130_000 },
-            { label: '300K', value: 300_000 },
-            { label: '1M', value: 1_000_000 },
-          ].map((chip) => {
-            const isActive = beans === chip.value;
-            return (
-              <button
-                key={chip.label}
-                type="button"
-                className={`quick-beans-chip ${isActive ? 'active' : ''}`}
-                onClick={() => {
-                  setInputValue(formatComma(chip.value));
-                  onBeansChange(chip.value);
-                }}
-                title={`Pilih target cepat ${chip.label} (${formatComma(chip.value)} Beans)`}
-              >
-                {chip.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <p className="field-hint">
-          Ketik angka target Beans kamu atau pilih tombol cepat di atas. Pemisah koma terformat otomatis.
-        </p>
       </div>
     </div>
   );

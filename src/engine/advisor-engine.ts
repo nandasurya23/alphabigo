@@ -4,22 +4,23 @@
  * Compliant with October 2026 Official Policy
  */
 
-import { HostStatus } from '@/types/calculator';
+import { HostStatus, NewHostMonth } from '@/types/calculator';
 
 export function generateAdvisorRecommendation(
   status: HostStatus,
   beans: number,
   days: number,
   hours: number,
-  daysInMonth: number = 30
+  daysInMonth: number = 30,
+  newHostMonth: NewHostMonth = 1
 ): string {
   const fullMonthDays = daysInMonth || 30;
   const safeBeans = Math.max(0, Number(beans) || 0);
   const safeDays = Math.max(0, Number(days) || 0);
   const safeHours = Math.max(0, Number(hours) || 0);
 
-  // 1. Kualifikasi Durasi untuk Old Host di Tabel A
-  if (status === 'premium') {
+  // 1. Kualifikasi Durasi untuk Old Host dan New Host Bulan 2-3 di Tabel A
+  if (status === 'premium' || (status === 'new' && newHostMonth === 2)) {
     if (safeHours < 40) {
       const needHours = Math.round((40 - safeHours) * 10) / 10;
       return `⚠️ <strong>Peringatan Durasi Siaran:</strong> Anda baru mencapai ${safeHours} jam. Tambah <strong>+${needHours} jam lagi</strong> untuk mencapai minimal 40 jam siaran valid agar komisi pokok bulanan dapat dicairkan!`;

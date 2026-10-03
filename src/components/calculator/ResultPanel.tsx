@@ -79,7 +79,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = React.memo(({
             <div className="gold-cube-badge" aria-hidden="true">
               2
             </div>
-            <h2 className="card-title-gold">ESTIMASI PENGHASILAN</h2>
+            <h2 className="card-title-gold">Estimasi Income</h2>
           </div>
           <div className="result-badge-glow">HASIL ESTIMASI</div>
         </div>

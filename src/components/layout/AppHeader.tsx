@@ -52,7 +52,7 @@ export const AppHeader: React.FC = React.memo(() => {
         <div className="header-status-capsule">
           <div className="status-chip live-chip">
             <span className="pulse-indicator"></span>
-            <span className="chip-text">Q2 - April 2026</span>
+            <span className="chip-text">Eff. 1 Oct 2026</span>
           </div>
           <div className="capsule-divider"></div>
           <div className="status-chip rate-chip">

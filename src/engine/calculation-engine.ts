@@ -8,6 +8,7 @@ import {
   HostBonusResult,
   DurationBonusResult,
   CalculationResult,
+  NewHostMonth,
 } from '@/types/calculator';
 import {
   POLICY_CONSTANTS,
@@ -33,7 +34,8 @@ export function calculateHostBonus(
   status: HostStatus,
   beans: number,
   days: number = 15,
-  hours: number = 40
+  hours: number = 40,
+  newHostMonth: NewHostMonth = 1
 ): HostBonusResult {
   const safeBeans = Math.max(0, Number(beans) || 0);
   const safeDays = Math.max(0, Math.min(POLICY_CONSTANTS.DAYS_MAX, Number(days) || 0));
@@ -55,69 +57,74 @@ export function calculateHostBonus(
     OFFICIAL_HOST_TIERS[OFFICIAL_HOST_TIERS.length - 1];
 
   const baseBonus = Math.round(safeBeans * matchedTier.rate);
-  const baseRuleText = `${matchedTier.label} × ${formatComma(safeBeans)} Beans`;
+  const percentage = Math.round(matchedTier.rate * 100);
+  const baseRuleText = `${formatCurrencyIDR(safeBeans)} Beans x ${percentage}% = ${formatCurrencyIDR(baseBonus)} Beans`;
   const tierName = matchedTier.label;
 
-  // New Host: Bebas syarat durasi maupun hari siaran di Tabel A (A.1.d & Arahan Owner)
-  if (status === 'new') {
+  // 1. New Host Bulan 1: Bebas syarat durasi maupun hari siaran di Tabel A (A.1.d & A.2.b)
+  if (status === 'new' && newHostMonth === 1) {
     return {
       bonus: baseBonus,
       ruleText: baseRuleText,
-      tierName: `New Host: ${tierName}`,
+      tierName: `New Host (Bulan 1): ${tierName}`,
       isProrata: false,
       qualified: true,
     };
   }
 
-  // Old Host: Wajib memenuhi 15 Hari & 40 Jam untuk komisi penuh 100%
+  // 2. New Host Bulan 2-3 ATAU Old Host (Bulan 4+):
+  // Wajib memenuhi 15 Hari & 40 Jam untuk komisi penuh 100% (A.1.c, A.1.d, & A.2.a)
+  const hostLabel = status === 'new' ? 'New Host (Bulan 2-3)' : 'Old Host';
+
   if (safeDays >= POLICY_CONSTANTS.MIN_VALID_DAYS && safeHours >= POLICY_CONSTANTS.MIN_VALID_HOURS) {
     return {
       bonus: baseBonus,
       ruleText: baseRuleText,
-      tierName: `Old Host: ${tierName}`,
+      tierName: `${hostLabel}: ${tierName}`,
       isProrata: false,
       qualified: true,
     };
   }
 
-  // Old Host: Komisi Prorata (F.b) - Syarat: 10–14 Hari, ≥40 Jam, dan ≥2.001 Beans
+  // Komisi Prorata (F.a & F.b) - Syarat: 10–14 Hari, ≥40 Jam, dan ≥2.001 Beans
   if (
     safeDays >= POLICY_CONSTANTS.PRORATA_MIN_DAYS &&
+    safeDays <= 14 &&
     safeHours >= POLICY_CONSTANTS.MIN_VALID_HOURS &&
     safeBeans >= POLICY_CONSTANTS.PRORATA_MIN_BEANS
   ) {
     const prorataBonus = Math.round((safeDays / 15) * baseBonus);
     return {
       bonus: prorataBonus,
-      ruleText: `Komisi Prorata (${safeDays}/15 Hari) × ${formatComma(baseBonus)} Beans`,
-      tierName: `Old Host: ${tierName} (Prorata)`,
+      ruleText: `Prorata (${safeDays}/15 Hari): ${formatCurrencyIDR(safeBeans)} Beans x ${percentage}% = ${formatCurrencyIDR(prorataBonus)} Beans`,
+      tierName: `${hostLabel}: ${tierName} (Prorata)`,
       isProrata: true,
       qualified: true,
     };
   }
 
-  // Old Host: Belum Memenuhi Syarat Kualifikasi (Hari < 10 atau Jam < 40)
+  // Belum Memenuhi Syarat Kualifikasi (Hari < 10 atau Jam < 40)
   if (safeHours === 0 && safeDays === 0) {
     return {
       bonus: 0,
       ruleText: 'Menunggu pengisian hari & jam siaran (Syarat: 15 Hari & 40 Jam)',
-      tierName: `Old Host: ${tierName} (Menunggu Durasi)`,
+      tierName: `${hostLabel}: ${tierName} (Menunggu Durasi)`,
       isProrata: false,
       qualified: false,
     };
   }
 
-  let reason = 'Target durasi belum tercapai';
+  let reason = 'Belum memenuhi syarat (Min. 15 hari & 40 jam)';
   if (safeHours < POLICY_CONSTANTS.MIN_VALID_HOURS) {
     reason = `Durasi siaran kurang dari 40 Jam (${safeHours} Jam)`;
   } else if (safeDays < POLICY_CONSTANTS.PRORATA_MIN_DAYS) {
-    reason = `Hari siaran valid kurang dari 10 Hari (${safeDays} Hari)`;
+    reason = `Hari siaran kurang dari 10 Hari (${safeDays} Hari)`;
   }
 
   return {
     bonus: 0,
-    ruleText: `${reason} (Syarat belum terpenuhi)`,
-    tierName: `Old Host: ${tierName} (Belum Memenuhi Syarat)`,
+    ruleText: reason,
+    tierName: `${hostLabel}: ${tierName} (Belum Memenuhi Syarat)`,
     isProrata: false,
     qualified: false,
   };
@@ -153,7 +160,7 @@ export function calculateNewHostExtraBonus(
   if (matched) {
     return {
       bonus: matched.bonusBeans,
-      ruleText: `${matched.label} (±Rp ${formatCurrencyIDR(matched.bonusIdrEstimate)})`,
+      ruleText: `Estimasi ±Rp${formatCurrencyIDR(matched.bonusIdrEstimate)}`,
       qualified: true,
     };
   }
@@ -201,15 +208,11 @@ export function calculateDurationBonus(
 
   // Jika tidak memenuhi satupun dari 3 target durasi -> Bonus = 0
   if (!targetColumn) {
-    let reason = 'Belum memenuhi syarat durasi';
-    if (safeDays < 20 && safeHours < 70) {
-      reason += ` (Min. 20 Hari & 70 Jam - saat ini ${safeDays} Hari, ${safeHours} Jam)`;
-    } else if (safeDays < 20) {
-      reason += ` (Min. 20 Hari Siaran - saat ini ${safeDays} Hari)`;
-    } else if (safeHours < 70) {
-      reason += ` (Min. 70 Jam Siaran - saat ini ${safeHours} Jam)`;
-    }
-    return { bonus: 0, ruleText: reason, qualified: false };
+    return {
+      bonus: 0,
+      ruleText: 'Belum memenuhi syarat (Min. 20 hari & 70 jam)',
+      qualified: false,
+    };
   }
 
   // Kategori: New Host (C.b)
@@ -272,14 +275,15 @@ export function calculateEstimatedIncome(
   beans: number,
   days: number = 15,
   hours: number = 40,
-  daysInMonth: number = 31
+  daysInMonth: number = 31,
+  newHostMonth: NewHostMonth = 1
 ): CalculationResult {
   const fullMonthDays = daysInMonth || 31;
   const safeBeans = Math.max(0, Number(beans) || 0);
   const safeDays = Math.max(0, Math.min(fullMonthDays, Number(days) || 0));
   const safeHours = Math.max(0, Math.min(POLICY_CONSTANTS.HOURS_MAX, Number(hours) || 0));
 
-  const hostBonusResult = calculateHostBonus(status, safeBeans, safeDays, safeHours);
+  const hostBonusResult = calculateHostBonus(status, safeBeans, safeDays, safeHours, newHostMonth);
   const extraBonusResult = calculateNewHostExtraBonus(status, safeBeans);
   const durationBonusResult = calculateDurationBonus(
     status,
