@@ -6,6 +6,7 @@ import {
   formatDecimal,
   formatCurrencyIDR,
   formatCurrencyUSD,
+  formatPercentage,
 } from '@/engine/formatters';
 
 describe('Formatters & Sanitizers', () => {
@@ -43,5 +44,23 @@ describe('Formatters & Sanitizers', () => {
     expect(formatCurrencyUSD(939.5238)).toBe('939');
     expect(formatCurrencyUSD(380.95)).toBe('380');
     expect(formatCurrencyUSD(0)).toBe('0');
+  });
+
+  it('formatPercentage formats exact decimals without unwanted rounding', () => {
+    // Official Policy .5 tiers
+    expect(formatPercentage(0.505)).toBe('50.5%');
+    expect(formatPercentage(0.465)).toBe('46.5%');
+    expect(formatPercentage(0.475)).toBe('47.5%');
+    expect(formatPercentage(0.755)).toBe('75.5%');
+
+    // Integer percentage tiers
+    expect(formatPercentage(0.45)).toBe('45%');
+    expect(formatPercentage(0.48)).toBe('48%');
+    expect(formatPercentage(0.5)).toBe('50%');
+    expect(formatPercentage(0.76)).toBe('76%');
+
+    // Edge cases
+    expect(formatPercentage(0)).toBe('0%');
+    expect(formatPercentage(NaN)).toBe('0%');
   });
 });

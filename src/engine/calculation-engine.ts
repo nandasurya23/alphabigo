@@ -16,7 +16,7 @@ import {
   NEW_HOST_EXTRA_BONUS_TIERS,
   DURATION_BONUS_TIERS,
 } from '@/constants/policy-constants';
-import { formatComma, formatCurrencyIDR } from '@/engine/formatters';
+import { formatComma, formatCurrencyIDR, formatPercentage } from '@/engine/formatters';
 
 export interface NewHostExtraBonusResult {
   readonly bonus: number;
@@ -57,8 +57,8 @@ export function calculateHostBonus(
     OFFICIAL_HOST_TIERS[OFFICIAL_HOST_TIERS.length - 1];
 
   const baseBonus = Math.round(safeBeans * matchedTier.rate);
-  const percentage = Math.round(matchedTier.rate * 100);
-  const baseRuleText = `${formatCurrencyIDR(safeBeans)} Beans x ${percentage}% = ${formatCurrencyIDR(baseBonus)} Beans`;
+  const percentageStr = formatPercentage(matchedTier.rate);
+  const baseRuleText = `${formatCurrencyIDR(safeBeans)} Beans x ${percentageStr} = ${formatCurrencyIDR(baseBonus)} Beans`;
   const tierName = matchedTier.label;
 
   // 1. New Host Bulan 1: Bebas syarat durasi maupun hari siaran di Tabel A (A.1.d & A.2.b)
@@ -96,7 +96,7 @@ export function calculateHostBonus(
     const prorataBonus = Math.round((safeDays / 15) * baseBonus);
     return {
       bonus: prorataBonus,
-      ruleText: `Prorata (${safeDays}/15 Hari): ${formatCurrencyIDR(safeBeans)} Beans x ${percentage}% = ${formatCurrencyIDR(prorataBonus)} Beans`,
+      ruleText: `Prorata (${safeDays}/15 Hari): ${formatCurrencyIDR(safeBeans)} Beans x ${percentageStr} = ${formatCurrencyIDR(prorataBonus)} Beans`,
       tierName: `${hostLabel}: ${tierName} (Prorata)`,
       isProrata: true,
       qualified: true,
