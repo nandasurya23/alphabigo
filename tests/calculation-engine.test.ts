@@ -112,36 +112,64 @@ describe('BIGO Calculation Engine - Tabel A Persentase Seragam (45% s/d 76%)', (
   it('TC-T1: 2.000 Beans (45%)', () => {
     const res = calculateHostBonus('premium', 2000, 15, 40);
     expect(res.bonus).toBe(900);
+    expect(res.ruleText).toBe('2.000 Beans x 45% = 900 Beans');
   });
 
-  it('TC-T2: 10.000 Beans (46.5%)', () => {
+  it('TC-T2: 10.000 Beans (46.5%) - Presisi .5%', () => {
     const res = calculateHostBonus('premium', 10000, 15, 40);
     expect(res.bonus).toBe(4650);
+    expect(res.ruleText).toBe('10.000 Beans x 46.5% = 4.650 Beans');
+  });
+
+  it('TC-T2b: 30.000 Beans (47.5%) - Presisi .5%', () => {
+    const res = calculateHostBonus('premium', 30000, 15, 40);
+    expect(res.bonus).toBe(14250);
+    expect(res.ruleText).toBe('30.000 Beans x 47.5% = 14.250 Beans');
   });
 
   it('TC-T3: 70.000 Beans (50%)', () => {
     const res = calculateHostBonus('premium', 70000, 15, 40);
     expect(res.bonus).toBe(35000);
+    expect(res.ruleText).toBe('70.000 Beans x 50% = 35.000 Beans');
   });
 
-  it('TC-T4: 100.000 Beans (50.5%)', () => {
-    const res = calculateHostBonus('premium', 100000, 15, 40);
+  it('TC-T4: 100.000 Beans (50.5%) - Kasus Revisi Owner (Bukan 51%)', () => {
+    const res = calculateHostBonus('new', 100000, 15, 40, 1);
     expect(res.bonus).toBe(50500);
+    expect(res.ruleText).toBe('100.000 Beans x 50.5% = 50.500 Beans');
+    expect(res.ruleText).not.toContain('51%');
+  });
+
+  it('TC-T4b: 100.000 Beans Prorata (50.5%) - Presisi pada Prorata', () => {
+    const res = calculateHostBonus('premium', 100000, 10, 40);
+    expect(res.isProrata).toBe(true);
+    expect(res.ruleText).toContain('100.000 Beans x 50.5% =');
+    expect(res.ruleText).not.toContain('51%');
+  });
+
+  it('TC-T4c: 7.000.000 Beans (75.5%) - Presisi .5%', () => {
+    const res = calculateHostBonus('premium', 7000000, 15, 40);
+    expect(res.bonus).toBe(5285000);
+    expect(res.ruleText).toBe('7.000.000 Beans x 75.5% = 5.285.000 Beans');
+    expect(res.ruleText).not.toContain('76%');
   });
 
   it('TC-T5: 300.000 Beans (54%)', () => {
     const res = calculateHostBonus('premium', 300000, 15, 40);
     expect(res.bonus).toBe(162000);
+    expect(res.ruleText).toBe('300.000 Beans x 54% = 162.000 Beans');
   });
 
   it('TC-T6: 400.000 Beans (55%)', () => {
     const res = calculateHostBonus('premium', 400000, 15, 40);
     expect(res.bonus).toBe(220000);
+    expect(res.ruleText).toBe('400.000 Beans x 55% = 220.000 Beans');
   });
 
   it('TC-T7: 600.000 Beans (57%)', () => {
     const res = calculateHostBonus('premium', 600000, 15, 40);
     expect(res.bonus).toBe(342000);
+    expect(res.ruleText).toBe('600.000 Beans x 57% = 342.000 Beans');
   });
 
   it('TC-T8: 850.000 Beans (59%)', () => {
@@ -177,6 +205,7 @@ describe('BIGO Calculation Engine - Tabel A Persentase Seragam (45% s/d 76%)', (
   it('TC-T14: 9.000.000 Beans (76%)', () => {
     const res = calculateHostBonus('premium', 9000000, 15, 40);
     expect(res.bonus).toBe(6840000);
+    expect(res.ruleText).toBe('9.000.000 Beans x 76% = 6.840.000 Beans');
   });
 });
 

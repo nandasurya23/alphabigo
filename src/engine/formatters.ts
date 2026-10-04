@@ -49,3 +49,9 @@ export function formatCurrencyUSD(val: number): string {
   if (typeof val !== 'number' || !Number.isFinite(val) || val <= 0) return '0';
   return COMMA_FORMATTER.format(Math.floor(val));
 }
+
+export function formatPercentage(rate: number): string {
+  if (typeof rate !== 'number' || !Number.isFinite(rate)) return '0%';
+  const pct = Math.round(rate * 1000) / 10;
+  return `${pct}%`;
+}
